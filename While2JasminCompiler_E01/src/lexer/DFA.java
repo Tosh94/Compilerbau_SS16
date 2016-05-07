@@ -1,9 +1,9 @@
 package lexer;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
-import util.Pair;
+import helper.Pair;
 import lexer.LexerGenerator.Token;
 
 /**
@@ -27,14 +27,15 @@ public class DFA extends AbstractDFA {
 
 		this.token = token;
 
-		finalStates.add(word.length());
-		sinkState = word.length() + 1;
-		transitions = new HashMap<Pair<Integer, Character>, Integer>();
-		for (int i = 0; i < word.length(); i++) {
-			transitions.put(new Pair<Integer, Character>(i, word.charAt(i)), i + 1);
+		// TODO: build DFA recognizing the given word
+		this.maxState = word.length();
+		this.finalStates = new HashSet<Integer>();
+		this.finalStates.add(Integer.valueOf(this.maxState));
+		this.isStateProductive = new HashMap<Integer, Boolean>();
+		this.delta = new HashMap<Pair<Integer, Character>, Integer>();
+		for(int i = 0; i < word.length(); i++) {
+			delta.put(new Pair<Integer, Character>(Integer.valueOf(i), Character.valueOf(word.charAt(i))), Integer.valueOf(i + 1));
 		}
-
-		productive = new int[word.length() + 2];
-		Arrays.fill(productive, -1);
+		this.reset();
 	}
 }

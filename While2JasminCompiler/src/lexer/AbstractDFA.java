@@ -1,10 +1,10 @@
 package lexer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map.Entry;
+import java.util.Map;
 
-import helper.Pair;
+import util.Pair;
 import lexer.LexerGenerator.Token;
 
 /**
@@ -14,24 +14,33 @@ public abstract class AbstractDFA {
 
 	protected Token token; // Token that is recognized by this automaton
 
-	// TODO: use data structure for representing
-	// - states
-	// - final states (and sink states)
-	// - transitions of the form (state, input) -> state
-	// - current state
-	
-	int maxState; // 0 is start state, Integer.MAX_VALUE is the sink state, sink state is not included in maxState
-	HashSet<Integer> finalStates;
-	HashMap<Integer, Boolean> isStateProductive;
-	HashMap<Pair<Integer, Character>, Integer> delta; //non-existant transistions go implicitly to Integer.MAX_VALUE, the sink state
-	int currentState;
+	protected final int initialState = 0;
+	protected int sinkState;
+	// set of final states
+	protected ArrayList<Integer> finalStates = new ArrayList<Integer>();
+	// mapping from (state, character) to nextState
+	protected HashMap<Pair<Integer, Character>, Integer> transitions;
+
+	protected int currentState = 0;
+
+	protected int[] productive;
 
 	/**
 	 * Reset the automaton to the initial state.
 	 */
 	public void reset() {
-		// TODO: reset automaton to initial state
-		currentState = 0;
+		currentState = initialState;
+	}
+
+	/**
+	 * This is useful for resuming parsing at a certain position
+	 * 
+	 * @param state
+	 *            Id of state that the automaton should start in
+	 */
+	public void resetToState(int state) {
+		assert (0 <= state && state < productive.length);
+		currentState = state;
 	}
 
 	/**
@@ -44,22 +53,20 @@ public abstract class AbstractDFA {
 	 *            The current input.
 	 */
 	public void doStep(char letter) {
-		// TODO: do step by going to the next state according to the current
-		// state and the read letter.
-		
-		 //non-existant transistions go implicitly to Integer.MAX_VALUE, the sink state
-		Integer goal = delta.get(new Pair<Integer, Character>(Integer.valueOf(currentState), Character.valueOf(letter)));
-		currentState = goal == null ? Integer.MAX_VALUE : goal.intValue();
+		Integer nextState = transitions.get(new Pair<Integer, Character>(currentState, letter));
+		if (nextState == null)
+			currentState = sinkState;
+		else
+			currentState = nextState;
 	}
 
 	/**
 	 * Check if the automaton is currently accepting.
 	 * 
-	 * @return True, if the automaton is currently in the accepting state.
+	 * @return True, if the automaton is currently in an accepting state.
 	 */
 	public boolean isAccepting() {
-		// TODO: return if the current state is accepting
-		return finalStates.contains(Integer.valueOf(currentState));
+		return finalStates.contains(currentState);
 	}
 
 	/**
@@ -79,56 +86,60 @@ public abstract class AbstractDFA {
 	}
 
 	/**
+	 * Get the current state.
+	 * 
+	 * @return The id of the current state.
+	 */
+	public int getCurrentState() {
+		return currentState;
+	}
+
+	/**
 	 * Checks if the final state can be reached from the current state.
 	 * 
 	 * @return True, if the state is productive, i.e. the final state can be
 	 *         reached.
 	 */
 	public boolean isProductive() {
-		// TODO: return if the current state is productive
-		
+		return isFinalStateReachable(currentState);
+	}
 
-		//We cache which state were productive in isStateProductive to be efficient
-		Boolean productive = isStateProductive.get(Integer.valueOf(currentState));
-		if(productive != null)
-			return productive.booleanValue();
-		
-		if(currentState == Integer.MAX_VALUE) {
-			isStateProductive.put(Integer.MAX_VALUE, Boolean.FALSE);
+	/**
+	 * Perform BFS to check if a final state is reachable from the given state.
+	 * 
+	 * @param state
+	 *            Starting state for BFS.
+	 * @return True, if the state is productive, i.e. a final state can be
+	 *         reached.
+	 */
+	protected boolean isFinalStateReachable(int state) {
+		if (productive[state] == 0) {
 			return false;
-		}
-		
-		if(finalStates.contains(Integer.valueOf(currentState))) {
-			isStateProductive.put(Integer.valueOf(currentState), Boolean.TRUE);
+		} else if (productive[state] == 1) {
 			return true;
+		} else if (finalStates.contains(state)) {
+			productive[state] = 1;
+			return true;
+		} else {
+			assert (productive[state] == -1);
+			productive[state] = 0;
 		}
-		
-		//BreadthFirstSearch to find a final state, stops when no change in visited states is detected
-		HashSet<Integer> visited = new HashSet<Integer>();
-		visited.add(Integer.valueOf(currentState));
-		boolean addedState = true, foundFinal = false;
-		while(addedState && !foundFinal) {
-			for(Entry<Pair<Integer, Character>, Integer> entry : delta.entrySet()) {
-				if(visited.contains(entry.getKey().getFirst())) {
-					if(visited.add(entry.getValue()))
-						addedState = true;
-					if(finalStates.contains(entry.getValue())) {
-						foundFinal = true;
-						break;
-					}
+
+		// Perform BFS
+		for (Map.Entry<Pair<Integer, Character>, Integer> entry : transitions.entrySet()) {
+			Pair<Integer, Character> key = entry.getKey();
+			// Consider outgoing transitions of state
+			if (key.getFirst() == state) {
+				if (isFinalStateReachable(entry.getValue())) {
+					assert (state != sinkState);
+					productive[state] = 1;
+					return true;
 				}
 			}
 		}
 
-		if(foundFinal) {
-			isStateProductive.put(Integer.valueOf(currentState), Boolean.TRUE);
-			return true;
-		} else {
-			for(Integer state : visited) {
-				isStateProductive.put(state, Boolean.FALSE);
-			}
-			return false;
-		}
+		productive[state] = 0;
+		return false;
 	}
 
 	/**

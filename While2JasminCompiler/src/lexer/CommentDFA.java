@@ -1,15 +1,23 @@
 package lexer;
 
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 
-import helper.Pair;
+import util.Pair;
 import lexer.LexerGenerator.Token;
 
 /**
  * DFA recognizing comments.
  */
 public class CommentDFA extends AbstractDFA {
+
+	private final int slashRead = 1;
+	private final int singleLine = 2;
+	private final int multiLine = 3;
+	private final int maybeEndMultiLine = 4;
+	private final int finalState = 5;
+	private final int macFinalState = 6;
+	private final int sinkState = 7;
 
 	/**
 	 * Construct a new DFA that recognizes comments within source code. There
@@ -20,36 +28,22 @@ public class CommentDFA extends AbstractDFA {
 	public CommentDFA() {
 		token = Token.COMMENT;
 
-		// TODO: build DFA recognizing comments
-		this.maxState = 7;
-		this.finalStates = new HashSet<Integer>();
-		this.finalStates.add(Integer.valueOf(4));
-		this.finalStates.add(Integer.valueOf(6));
-		this.finalStates.add(Integer.valueOf(7));
-		this.isStateProductive = new HashMap<Integer, Boolean>();
-		for(int i = 0; i <= this.maxState; i++)
-			this.isStateProductive.put(Integer.valueOf(i), Boolean.TRUE);
-		this.delta = new HashMap<Pair<Integer, Character>, Integer>();
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(0),  Character.valueOf('/')), Integer.valueOf(1));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(1),  Character.valueOf('*')), Integer.valueOf(2));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(2),  Character.valueOf('*')), Integer.valueOf(3));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(3),  Character.valueOf('/')), Integer.valueOf(4));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(3),  Character.valueOf('*')), Integer.valueOf(3));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(1),  Character.valueOf('/')), Integer.valueOf(5));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(5),  Character.valueOf('\r')), Integer.valueOf(6));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(6),  Character.valueOf('\n')), Integer.valueOf(7));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(5),  Character.valueOf('\n')), Integer.valueOf(7));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(5),  Character.valueOf('a')), Integer.valueOf(5));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(5),  Character.valueOf('*')), Integer.valueOf(5));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(5),  Character.valueOf('/')), Integer.valueOf(5));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(2),  Character.valueOf('a')), Integer.valueOf(2));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(2),  Character.valueOf('\r')), Integer.valueOf(2));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(2),  Character.valueOf('\n')), Integer.valueOf(2));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(2),  Character.valueOf('/')), Integer.valueOf(2));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(3),  Character.valueOf('a')), Integer.valueOf(2));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(3),  Character.valueOf('\r')), Integer.valueOf(2));
-		delta.put(new Pair<Integer, Character>(Integer.valueOf(3),  Character.valueOf('\n')), Integer.valueOf(2));
-		this.reset();
+		transitions = new HashMap<Pair<Integer, Character>, Integer>();
+		transitions.put(new Pair<Integer, Character>(initialState, '/'), slashRead);
+		transitions.put(new Pair<Integer, Character>(slashRead, '/'), singleLine);
+		transitions.put(new Pair<Integer, Character>(slashRead, '*'), multiLine);
+		transitions.put(new Pair<Integer, Character>(singleLine, '\n'), finalState);
+		transitions.put(new Pair<Integer, Character>(singleLine, '\r'), macFinalState);
+		transitions.put(new Pair<Integer, Character>(macFinalState, '\n'), finalState);
+		transitions.put(new Pair<Integer, Character>(multiLine, '*'), maybeEndMultiLine);
+		transitions.put(new Pair<Integer, Character>(maybeEndMultiLine, '*'), maybeEndMultiLine);
+		transitions.put(new Pair<Integer, Character>(maybeEndMultiLine, '/'), finalState);
+
+		finalStates.add(finalState);
+		finalStates.add(macFinalState);
+
+		productive = new int[8];
+		Arrays.fill(productive, -1);
 	}
 
 	/**
@@ -61,21 +55,30 @@ public class CommentDFA extends AbstractDFA {
 	 */
 	@Override
 	public void doStep(char letter) {
-		// TODO: implement accordingly
-		if(letter == '/' || letter == '*' || letter == '\r' || letter == '\n')
-			super.doStep(letter);
-		else
-			super.doStep('a');
+		Integer nextState = transitions.get(new Pair<Integer, Character>(currentState, letter));
+		if (nextState == null) {
+			switch (currentState) {
+			case singleLine:
+			case multiLine:
+				// stay here
+				break;
+			case maybeEndMultiLine:
+				currentState = multiLine;
+				break;
+			default:
+				currentState = sinkState;
+			}
+		} else
+			currentState = nextState;
 	}
 
 	/**
-	 * Check if the automaton is currently accepting.
-	 * 
-	 * @return True, if the automaton is currently in the accepting state.
+	 * Checks if the final state is reachable. This method works differently
+	 * than in the superclass AbstractDFA as not all possible steps are directly
+	 * encoded as transitions.
 	 */
 	@Override
-	public boolean isAccepting() {
-		// TODO: implement accordingly
-		return super.isAccepting();
+	protected boolean isFinalStateReachable(int state) {
+		return state != sinkState;
 	}
 }
