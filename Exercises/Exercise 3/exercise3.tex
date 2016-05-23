@@ -1,0 +1,12 @@
+Let $G = \langle N, \Sigma , P, S \rangle \in CFG_\Sigma$ where $P = \{\pi_1, \dots ,  \pi_p \}$, $X = N \cup \Sigma$ with $G \in LL(1)$.\\
+Claim: Then $G$ is \emph{unambiguous}.\\[1ex]
+Proof by contradiction:\\
+Let $G$ be \emph{ambiguous}. Then for some $w \in \Sigma^{*}$ there are 2 different analyses $z$ and $z'$, $S \xRightarrow{z}{}_{\hspace{-3pt} l}\; w, S \xRightarrow{z}{}_{\hspace{-3pt} l}\; w, z \neq z', z, z' \in [p]^{*}$ where $z = kil, z' = kjm, l \neq m, i \neq j, k, l, m \in [p]^{*}, i, j \in [p]$.\\
+Then $S \xRightarrow{k}{}_{\hspace{-3pt} l}\; vA\alpha , A \in N, v \in \Sigma^{*}, \alpha \in X^{*}$ and\\
+\begin{equation*}\begin{split}
+vA\alpha \xRightarrow{i}{}_{\hspace{-3pt} l}\; v\beta\alpha \xRightarrow{l}{}_{\hspace{-3pt} l}\; vx = w, x \in \Sigma^{*}\\
+vA\alpha \xRightarrow{j}{}_{\hspace{-3pt} l}\; v\gamma\alpha \xRightarrow{m}{}_{\hspace{-3pt} l}\; vy = w, y \in \Sigma^{*}\\
+\implies x = y
+\end{split}\end{equation*}
+Since $x = Y$, $first_1(x) = first_1(y)$ and thus $G \not\in LL(1)$. \Lightning\\[1ex]
+By the principle of contradiction follows that $G$ is \emph{unambiguous}.
