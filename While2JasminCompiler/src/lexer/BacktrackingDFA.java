@@ -215,7 +215,7 @@ public class BacktrackingDFA {
 						mode = recog; // Stays null if no Token was found
 						remainingInput = remainingInput.substring(1); // "Eats" first (read) letter
 						if(mode != null)
-							acceptedWord = readWord;
+							acceptedWord = readWord.replaceAll("\t", "\\\\t").replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
 					} else { // (3)
 						throw new LexerException("Couldn't find a token for " + readWord + " at letter " + (word.length() - remainingInput.length()), result);
 					}
@@ -228,7 +228,7 @@ public class BacktrackingDFA {
 							mode = recog;
 							lookahead = "";
 							remainingInput = remainingInput.substring(1); // "Eats" first (read) letter
-							acceptedWord = readWord;
+							acceptedWord = readWord.replaceAll("\t", "\\\\t").replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
 						} else { // (5)
 							lookahead += a;
 							remainingInput = remainingInput.substring(1); // "Eats" first (read) letter

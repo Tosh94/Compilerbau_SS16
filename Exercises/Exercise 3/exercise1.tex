@@ -1,0 +1,25 @@
+% Beispiel für Graph
+\begin{center}
+\begin{tikzpicture}[align=center,node distance=10mm,on grid,auto]
+   %Syntax:
+   %\node[align=<alignment>] (<name>) [<location>] {<text>};
+   \node[align=center] (r) []  {r};
+   \node[align=center] (p) [below=of r]  {p};
+   \node[align=center] (temp) [below=of p]  {};
+   \node[align=center] (tempa) [left=of temp]  {};
+   \node[align=center] (tempb) [right=of temp]  {};
+   \node[align=center] (b) [right=of tempb]  {b};
+   \node[align=center] (a) [left=of tempa]  {a};
+   
+   %Syntax:
+   %\path[<line type>]
+   % (<name of start>) edge [<textlocation>, <curve type>] {<text>} (<name of target>)
+   \path[->]
+    (a) edge [right] node {$NOT$} (p)
+        edge (r)
+    (b) edge (p)
+    	edge [bend right=60] (r)
+    (p) edge [right] node {$NOT$} (r)
+    (r) edge [loop above] (r);
+\end{tikzpicture}
+\end{center}
