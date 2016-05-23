@@ -1,8 +1,79 @@
-a)
+\subsection*{a)}
 
 To extend the statement of Theorem 6.10, we first define $la_k(\pi)$ with $\pi := A \rightarrow \beta \in P$ as follows:
 \begin{equation*}\begin{split}
 la_k(\pi) := first_k(\beta \cdot follow_k(A)) \subseteq \Sigma_{\epsilon}^*
 \end{split}\end{equation*}
 
-Then $G$ is in $LL(k)$ for arbitrary $k \in \mathbb{N}_0$ iff $la_k(A \rightarrow \beta) \cap la_k(A \rightarrow \gamma) = \emptyset$ for all pairs of rules $A \rightarrow \beta | \gamma \in P$ with $\beta \neq \gamma$.
+Then $G$ is in $LL(k)$ for arbitrary $k \in \mathbb{N}_0 \Leftrightarrow la_k(A \rightarrow \beta) \cap la_k(A \rightarrow \gamma) = \emptyset$ for all pairs of rules $A \rightarrow \beta | \gamma \in P$ with $\beta \neq \gamma$.
+
+\subsection*{b)}
+
+\subsubsection*{First characterization:}
+
+Iterate over all possible derivations \begin{equation*}
+S \Rightarrow_l^{*} wA\alpha \begin{cases}\Rightarrow_l w\beta\alpha\\ \Rightarrow_l w\gamma\alpha\end{cases}
+\end{equation*} and test if \begin{equation*}
+first_1(\beta\alpha) \cap first_1(\gamma\alpha) = \emptyset
+\end{equation*}
+
+\textbf{1.}
+\begin{equation*}
+\begin{split}
+S \Rightarrow_l^{0} \epsilon S\epsilon \begin{cases}\Rightarrow_l \epsilon aAab\epsilon\\ \Rightarrow_l \epsilon bAbb\epsilon\end{cases} \\
+first_2(aAab\epsilon) = \{aa\} \\
+first_2(bAbb\epsilon) = \{ba, bb\} \\
+\{aa\} \cap \{ba, bb\} = \emptyset \quad \checkmark
+\end{split}
+\end{equation*}
+
+\textbf{2.}
+\begin{equation*}
+\begin{split}
+S \Rightarrow_l^{1} aAab \begin{cases}\Rightarrow_l aaab\\ \Rightarrow_l \epsilon a\epsilon ab\end{cases} \\
+first_2(aab) = \{aa\} \\
+first_2(\epsilon ab) = \{ab\} \\
+\{aa\} \cap \{ab\} = \emptyset \quad \checkmark
+\end{split}
+\end{equation*}
+
+\textbf{3.}
+\begin{equation*}
+\begin{split}
+S \Rightarrow_l^{1} bAbb \begin{cases}\Rightarrow_l babb\\ \Rightarrow_l \epsilon b\epsilon bb\end{cases} \\
+first_2(abb) = \{ab\} \\
+first_2(\epsilon bb) = \{bb\} \\
+\{ab\} \cap \{bb\} = \emptyset \quad \checkmark
+\end{split}
+\end{equation*}
+
+Thus $G \in LL(2)$.
+
+\subsubsection*{Second characterization:}
+
+For all pairs of rules $A \rightarrow \beta | \gamma \in P, \beta \neq \gamma$, check if
+\begin{equation*}
+la_2(A\rightarrow \beta) \cap la_2(A\rightarrow \gamma) = \emptyset
+\end{equation*}
+
+\textbf{1.} $S \rightarrow aAab | bAbb$:
+\begin{equation*}
+\begin{split}
+follow_2(S) = \{\epsilon\} \\
+la_2(S\rightarrow aAab) = first_2(aAab \cdot \{\epsilon\}) = \{aa\} \\
+la_2(S\rightarrow bAbb) = first_2(bAbb \cdot \{\epsilon\}) = \{ba, bb\} \\
+\{aa\} \cap \{ba, bb\} = \emptyset \quad \checkmark
+\end{split}
+\end{equation*}
+
+\textbf{2.} $A \rightarrow a | \epsilon$:
+\begin{equation*}
+\begin{split}
+follow_2(A) = \{ab, bb\} \\
+la_2(A\rightarrow a) = first_2(a \cdot \{ab, bb\}) = \{aa, ab\} \\
+la_2(A\rightarrow \epsilon) = first_2(\epsilon \cdot \{ab, bb\}) = \{ab, bb\} \\
+\{aa, ab\} \cap \{ab, bb\} \neq \emptyset \quad \text{\Lightning}
+\end{split}
+\end{equation*}
+
+Thus (incorrectly) $G \not\in LL(2)$.
