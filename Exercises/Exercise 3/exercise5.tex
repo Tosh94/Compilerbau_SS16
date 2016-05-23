@@ -1,0 +1,26 @@
+
+
+b)
+
+$S \rightarrow (L) | a$
+
+$L \rightarrow L,S | L,SS | S | SS$
+
+First step: remove left recursion
+
+$S \rightarrow (L) | a$
+
+$L \rightarrow SL^{'} | SSL^{'}$
+
+$L^{'} \rightarrow \epsilon | ,SL^{'} | ,SSL^{'}$
+
+Second step: left factorization
+
+$S \rightarrow (L) | a$
+
+$L \rightarrow SL^{''}$
+
+$L^{''} \rightarrow L^{'} | SL^{'}$
+
+$L^{'} \rightarrow \epsilon | ,SL^{''}$
+
