@@ -1,25 +1,118 @@
-% Beispiel für Graph
+
+\begin{equation*}
+  \begin{aligned}
+  S \rightarrow & S + S & (1) \\
+  S \rightarrow & SS & (2) \\
+  S \rightarrow & (S) & (3) \\
+  S \rightarrow & S* & (4) \\
+  S \rightarrow & a & (5)
+\end{aligned}
+\end{equation*}
+
+a)
+
+leftmost analysis of $(a + a)*a$:
+
+\begin{equation*}
+  \begin{aligned}
+          & ((a + a)*a&, &S&, &\epsilon &) \\
+ \vdash   & ((a + a)*a&,  &SS&, &2 &) \\
+ \vdash   & ((a + a)*a&,  & S*S&, &24&) \\
+ \vdash   & ((a + a)*a&,  & (S)*S&, &243&) \\
+ \vdash   & (a + a)*a&,  & S)*S&, &243&) \\
+ \vdash   & (a + a)*a&,  & S + S)*S&, &2431&) \\
+ \vdash   & (a + a)*a&,  & a + S)*S&, &24315&) \\
+ \vdash   & (+ a)*a&,  & + S)*S&, &24315&) \\
+ \vdash   & (a)*a&,  & S)*S&, &24315&) \\
+ \vdash   & (a)*a&,  & a)*S&, &243155&) \\
+ \vdash   & ()*a&,  & )*S&, &243155&) \\
+ \vdash   & (*a&,  & *S&, &243155&) \\
+ \vdash   & (a&,  & S&, &243155&) \\
+ \vdash   & (a&,  & a&, &2431555&) \\
+ \vdash   & (\epsilon&,  & \epsilon&, &2431555&) \\
+\end{aligned}
+\end{equation*}
+
+b)
+
+rightmost analysis of $(a + a)*a$:
+
+\begin{equation*}
+  \begin{aligned}
+          & ((a + a)*a&, &S&, &\epsilon &) \\
+ \vdash   & ((a + a)*a&,  &SS&, &2 &) \\
+ \vdash   & ((a + a)*a&,  &Sa&, &25 &) \\
+ \vdash   & ((a + a)*&,  &S&, &25 &) \\
+ \vdash   & ((a + a)*&,  &S*&, &254 &) \\
+ \vdash   & ((a + a)&,  &S&, &254 &) \\
+ \vdash   & ((a + a)&,  &(S)&, &2543 &) \\
+ \vdash   & ((a + a&,  &(S&, &2543 &) \\
+ \vdash   & ((a + a&,  &(S+S&, &25431 &) \\
+ \vdash   & ((a + a&,  &(S+a&, &254315 &) \\
+ \vdash   & ((a +&,  &(S+&, &254315 &) \\
+ \vdash   & ((a&,  &(S&, &254315 &) \\
+ \vdash   & ((a&,  &(a&, &2543155 &) \\
+ \vdash   & ((&,  &(&, &2543155 &) \\
+ \vdash   & (\epsilon&,  & \epsilon&, &2543155&) \\
+\end{aligned}
+\end{equation*}
+
+c) G is not unambiguous. Given the word $aaa$, two possible Syntax trees exist:
+
 \begin{center}
 \begin{tikzpicture}[align=center,node distance=10mm,on grid,auto]
    %Syntax:
    %\node[align=<alignment>] (<name>) [<location>] {<text>};
-   \node[align=center] (r) []  {r};
-   \node[align=center] (p) [below=of r]  {p};
-   \node[align=center] (temp) [below=of p]  {};
-   \node[align=center] (tempa) [left=of temp]  {};
-   \node[align=center] (tempb) [right=of temp]  {};
-   \node[align=center] (b) [right=of tempb]  {b};
-   \node[align=center] (a) [left=of tempa]  {a};
+   \node[align=center] (S) []  {S};
+   \node[align=center] (temp) [below=of S]  {};
+   \node[align=center] (Sa) [left=of temp]  {S};
+   \node[align=center] (Sb) [right=of temp]  {S};
+   \node[align=center] (Sc) [below=of Sa]  {a};
+   \node[align=center] (tempa) [below=of Sb]  {};
+   \node[align=center] (Sd) [right=of tempa]  {S};
+   \node[align=center] (Se) [left=of tempa]  {S};
+   \node[align=center] (Sf) [below=of Sd]  {a};
+   \node[align=center] (Sg) [below=of Se]  {a};
    
    %Syntax:
    %\path[<line type>]
    % (<name of start>) edge [<textlocation>, <curve type>] {<text>} (<name of target>)
    \path[->]
-    (a) edge [right] node {$NOT$} (p)
-        edge (r)
-    (b) edge (p)
-    	edge [bend right=60] (r)
-    (p) edge [right] node {$NOT$} (r)
-    (r) edge [loop above] (r);
+    (S) edge (Sa)
+        edge (Sb)
+    (Sa) edge (Sc)
+    (Sb) edge (Sd)
+    	 edge (Se)
+    (Sd) edge (Sf)
+    (Se) edge (Sg);
+\end{tikzpicture}
+\hspace{20mm}
+\begin{tikzpicture}[align=center,node distance=10mm,on grid,auto]
+   %Syntax:
+   %\node[align=<alignment>] (<name>) [<location>] {<text>};
+   \node[align=center] (S) []  {S};
+   \node[align=center] (temp) [below=of S]  {};
+   \node[align=center] (Sa) [right=of temp]  {S};
+   \node[align=center] (Sb) [left=of temp]  {S};
+   \node[align=center] (Sc) [below=of Sa]  {a};
+   \node[align=center] (tempa) [below=of Sb]  {};
+   \node[align=center] (Sd) [right=of tempa]  {S};
+   \node[align=center] (Se) [left=of tempa]  {S};
+   \node[align=center] (Sf) [below=of Sd]  {a};
+   \node[align=center] (Sg) [below=of Se]  {a};
+   
+   %Syntax:
+   %\path[<line type>]
+   % (<name of start>) edge [<textlocation>, <curve type>] {<text>} (<name of target>)
+   \path[->]
+    (S) edge (Sa)
+        edge (Sb)
+    (Sa) edge (Sc)
+    (Sb) edge (Sd)
+    	 edge (Se)
+    (Sd) edge (Sf)
+    (Se) edge (Sg);
 \end{tikzpicture}
 \end{center}
+
+because the derivation $S \rightarrow SS | a$ is part of $G$. Since two different derivations exist, $G$ cannot be unambiguous.
