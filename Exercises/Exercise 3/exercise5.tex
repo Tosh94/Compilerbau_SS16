@@ -1,24 +1,79 @@
+\subsection*{a)}
+
+Using Theorem 6.10, check $la(L \rightarrow S)$ and $la(S \rightarrow SS)$:
+
+\begin{equation*}
+\begin{split}
+la(L \rightarrow S) = fi(S \cdot fo(L)) = fi(S \cdot \{), ,\}) = \{(, a\} \\
+la(L \rightarrow SS) = fi(SS \cdot fo(L)) = fi(SS \cdot \{), ,\}) = \{(, a \} \\
+\{(, a\} \cap \{(, a\} = \{(, a\}
+\end{split}
+\end{equation*}
+
+Thus, $G \not\in LL(1)$.
+
 \subsection*{b)}
 
-$S \rightarrow (L) | a$
-
-$L \rightarrow L,S | L,SS | S | SS$
+\begin{equation*}
+\begin{split}
+&S \rightarrow (L) | a \\
+&L \rightarrow L,S | L,SS | S | SS
+\end{split}
+\end{equation*}
 
 First step: remove left recursion
 
-$S \rightarrow (L) | a$
-
-$L \rightarrow SL^{'} | SSL^{'}$
-
-$L^{'} \rightarrow \epsilon | ,SL^{'} | ,SSL^{'}$
+\begin{equation*}
+\begin{split}
+&S \rightarrow (L) | a \\
+&L \rightarrow SL^{'} | SSL^{'} \\
+&L^{'} \rightarrow \epsilon | ,SL^{'} | ,SSL^{'}
+\end{split}
+\end{equation*}
 
 Second step: left factorization
 
-$S \rightarrow (L) | a$
+\begin{equation*}
+\begin{split}
+&S \rightarrow (L) | a \\
+&L \rightarrow SL^{''} \\
+&L^{''} \rightarrow L^{'} | SL^{'} \\
+&L^{'} \rightarrow \epsilon | ,SL^{''}
+\end{split}
+\end{equation*}
 
-$L \rightarrow SL^{''}$
+\subsection*{c)}
 
-$L^{''} \rightarrow L^{'} | SL^{'}$
+Prove using Theorem 6.10:
 
-$L^{'} \rightarrow \epsilon | ,SL^{''}$
+\textbf{1.} $S \rightarrow (L) | a$:
+\begin{equation*}
+\begin{split}
+fo(S) = \{(, a, ), \epsilon, ,\} \\
+la(S \rightarrow (L)) = fi((L) \cdot fo(S)) = \{ ( \} \\
+la(S \rightarrow a) = fi(a \cdot fo(S)) = \{ a \} \\
+\{ ( \} \cap \{ a \} = \emptyset \quad \checkmark
+\end{split}
+\end{equation*}
 
+\textbf{2.} $L^{''} \rightarrow L^{'} | SL^{'}$:
+\begin{equation*}
+\begin{split}
+fo(L^{''}) = \{)\} \\
+la(L^{''} \rightarrow L^{'}) = fi(L^{'} \cdot fo(L^{''})) = \{ ), , \} \\
+la(L^{''} \rightarrow SL^{'}) = fi(SL^{'} \cdot fo(L^{''})) = \{ (, a \} \\
+\{ ), , \} \cap \{ (, a \} = \emptyset \quad \checkmark
+\end{split}
+\end{equation*}
+
+\textbf{3.} $L^{'} \rightarrow \epsilon | ,SL^{''}$:
+\begin{equation*}
+\begin{split}
+fo(L^{'}) = \{)\} \\
+la(L^{'} \rightarrow \epsilon) = fi(\epsilon \cdot fo(L^{'})) = \{ ) \} \\
+la(L^{'} \rightarrow ,SL^{''}) = fi(,SL^{''} \cdot fo(L^{'})) = \{ , \} \\
+\{ ) \} \cap \{ , \} = \emptyset \quad \checkmark
+\end{split}
+\end{equation*}
+
+Thus $G' \in LL(1)$.
