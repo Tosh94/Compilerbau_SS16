@@ -47,9 +47,7 @@ public class Symbol {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		String sToken = token != null ? token.toString() : "null";
-		String sAttribute = attribute != null ? attribute.toString() : "null";
-		return "(" + sToken + ", " + sAttribute + ")";
+		return "(" + token.toString() + ", " + attribute.toString() + ")";
 	}
 
 }
