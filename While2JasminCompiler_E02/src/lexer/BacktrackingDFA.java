@@ -16,7 +16,7 @@ import util.Pair;
 public class BacktrackingDFA {
 
 	private List<AbstractDFA> automata;
-	private HashMap<Pair<String, Character>, int[]> transitions;
+	private HashMap<Pair<int[], Character>, int[]> transitions;
 	private Map<String, Token> recognisedToken;
 	private int[] initialState;
 	private int[] backtrackState;
@@ -88,7 +88,7 @@ public class BacktrackingDFA {
 	 * Generate all transitions by exploring the state space.
 	 */
 	private void generateTransitions() {
-		transitions = new HashMap<Pair<String, Character>, int[]>();
+		transitions = new HashMap<Pair<int[], Character>, int[]>();
 		recognisedToken = new HashMap<String, Token>();
 
 		// Create array of relevant alphabet
@@ -110,11 +110,11 @@ public class BacktrackingDFA {
 		visitedStates.add(hashState(state));
 
 		// Explore possible states
+		int[] tempState = new int[initialState.length];
 		while (!statesToExpand.isEmpty()) {
 			state = statesToExpand.remove();
 			// Consider all possible transitions
 			for (char letter : relevantAlphabet) {
-				int[] tempState = new int[initialState.length];
 				for (int i = 0; i < automata.size(); i++) {
 					AbstractDFA automaton = automata.get(i);
 					automaton.resetToState(state[i]);
@@ -123,10 +123,10 @@ public class BacktrackingDFA {
 				}
 				if (!visitedStates.contains(hashState(tempState))) {
 					// New state needs exploration
-					statesToExpand.add(tempState);
+					statesToExpand.add(tempState.clone());
 					visitedStates.add(hashState(tempState));
 				}
-				transitions.put(new Pair<String, Character>(hashState(state), letter), tempState);
+				transitions.put(new Pair<int[], Character>(state, letter), tempState);
 			}
 			// Check final states
 			setToken(state);
@@ -142,11 +142,9 @@ public class BacktrackingDFA {
 	 */
 	private String hashState(int[] state) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < state.length - 1; i++) {
+		for (int i = 0; i < state.length; i++) {
 			builder.append(state[i]);
-			builder.append(',');
 		}
-		builder.append(state[state.length - 1]);
 		return builder.toString();
 	}
 
@@ -174,19 +172,12 @@ public class BacktrackingDFA {
 	 * @param letter
 	 *            The current character.
 	 * @return The recognized token.
-	 * @throws LexerException
-	 *             Exeception if step could not be performed.
 	 */
-	public Token doStep(char letter) throws LexerException {
-		currentState = transitions.get(new Pair<String, Character>(hashState(currentState), letter));
-		if (currentState == null) {
-			throw new LexerException("Symbol: " + letter + " not part of the alphabet.");
+	public Token doStep(char letter) {
+		for (int i = 0; i < automata.size(); i++) {
+			automata.get(i).doStep(letter);
+			currentState[i] = automata.get(i).getCurrentState();
 		}
-		// for (int i = 0; i < automata.size(); i++) {
-		// automata.get(i).doStep(letter);
-		// currentState[i] = automata.get(i).getCurrentState();
-		// }
-
 		return recognisedToken.get(hashState(currentState));
 	}
 
@@ -205,45 +196,73 @@ public class BacktrackingDFA {
 	public List<Symbol> run(String word) throws LexerException {
 		List<Symbol> result = new ArrayList<Symbol>();
 
-		char[] wordAsChar = word.toCharArray();
-		Token backtrackToken = null;
-		Token currentToken = null;
-		int backtrackPointer = 0;
-		int currentPointer = 0;
-		System.arraycopy(initialState, 0, backtrackState, 0, initialState.length);
-		System.arraycopy(initialState, 0, currentState, 0, initialState.length);
-
-		// Initialize automata
-		for (int i = 0; i < automata.size(); i++) {
-			automata.get(i).reset();
-		}
-
-		// Run backtracking DFA
-		while (backtrackPointer < wordAsChar.length) {
-			String value = Character.toString(wordAsChar[currentPointer]);
-			while (currentPointer < wordAsChar.length && isProductive()) {
-				currentToken = doStep(wordAsChar[currentPointer]);
-				if (currentToken != null) {
-					// New token found
-					value += new String(Arrays.copyOfRange(wordAsChar, backtrackPointer + 1, currentPointer + 1));
-					backtrackToken = currentToken;
-					backtrackPointer = currentPointer;
-					System.arraycopy(currentState, 0, backtrackState, 0, initialState.length);
+		// TODO: implement the backtracking automaton.
+		
+		resetToState(initialState);
+		
+		Token mode = null;
+		String lookahead = "";
+		String remainingInput = word;
+		String readWord = "", acceptedWord = "";
+		
+		while (true) {
+			if(!remainingInput.isEmpty()) {
+				if(mode == null) { // normal mode
+					char a = remainingInput.charAt(0);
+					Token recog = doStep(a);
+					readWord += a; //Save read word for attribute / exception
+					if(isProductive()){ // (1) + (2)
+						mode = recog; // Stays null if no Token was found
+						remainingInput = remainingInput.substring(1); // "Eats" first (read) letter
+						if(mode != null)
+							acceptedWord = readWord.replaceAll("\t", "\\\\t").replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
+					} else { // (3)
+						throw new LexerException("Couldn't find a token for " + readWord + " at letter " + (word.length() - remainingInput.length()), result);
+					}
+				} else { // backtrack mode
+					char a = remainingInput.charAt(0);
+					Token recog = doStep(a);
+					if(isProductive()){
+						readWord += a; //Save read word for attribute / exception
+						if(recog != null) { // (4)
+							mode = recog;
+							lookahead = "";
+							remainingInput = remainingInput.substring(1); // "Eats" first (read) letter
+							acceptedWord = readWord.replaceAll("\t", "\\\\t").replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
+						} else { // (5)
+							lookahead += a;
+							remainingInput = remainingInput.substring(1); // "Eats" first (read) letter
+						}
+					} else { // (6)
+						result.add(new Symbol(mode, acceptedWord));
+						mode = null; //Reset to normal mode
+						resetToState(initialState);
+						remainingInput = lookahead + remainingInput;
+						lookahead = "";
+						readWord = "";
+						acceptedWord = "";
+					}
 				}
-				currentPointer++;
-			}
-			if (backtrackToken != null) {
-				result.add(new Symbol(backtrackToken, value));
-				currentPointer = backtrackPointer + 1;
-				resetToState(initialState);
-				backtrackToken = null;
-				backtrackPointer++;
-			} else {
-				throw new LexerException("Last backtrack position is: " + backtrackPointer
-						+ "\nScanned before failure: " + word.substring(0, backtrackPointer + 1), result);
+			} else { // end of input
+				if(lookahead.isEmpty()) {
+					if(mode != null) { // (7)
+						result.add(new Symbol(mode, acceptedWord));
+						break;
+					} else { // (8)
+						throw new LexerException("Unexpected end of file", result);
+					}
+				} else { // (9)
+					result.add(new Symbol(mode, acceptedWord));
+					mode = null; //Reset to normal mode
+					resetToState(initialState);
+					remainingInput = lookahead;
+					lookahead = "";
+					readWord = "";
+					acceptedWord = "";
+				}
 			}
 		}
-
+		
 		return result;
 	}
 
