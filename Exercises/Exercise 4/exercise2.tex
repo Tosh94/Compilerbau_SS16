@@ -1,0 +1,77 @@
+\subsection*{a)}
+
+\begin{enumerate}
+\item start $\rightarrow$ guard
+\item guard $\rightarrow$ rel
+\item guard $\rightarrow$ guard AND guard
+\item guard $\rightarrow$ guard OR guard
+\item rel $\rightarrow$ ID EQ ID
+\item rel $\rightarrow$ ID LEQ ID
+\end{enumerate}
+
+Matching Steps:
+
+\begin{equation*}
+  \begin{aligned}
+          & (ANDw&, &ANDg&, &z &) \vdash   & (w&,  &g&, &z &) \\
+          & (ORw&, &ORg&, &z &) \vdash   & (w&,  &g&, &z &) \\
+          & (IDw&, &IFg&, &z &) \vdash   & (w&,  &g&, &z &) \\
+          & (EQw&, &EQw&, &z &) \vdash   & (w&,  &g&, &z &) \\
+          & (LEQw&, &LEQg&, &z &) \vdash   & (w&,  &g&, &z &)
+\end{aligned}
+\end{equation*}
+
+Transition steps:
+
+\begin{equation*}
+  \begin{aligned}
+          & (IDw&, &startg&, &z &) \vdash   & (w&,  &guardg&, &z1 &) \\
+          & \\
+          & (IDw&, &guardg&, &z &) \vdash   & (w&,  &relg&, &z2 &) \\
+          & (IDw&, &guardg&, &z &) \vdash   & (w&,  &guard\:AND\:guardg&, &z3 &) \\
+          & (IDw&, &guardg&, &z &) \vdash   & (w&,  &guard\:OR\:guardg&, &z4 &) \\
+          & \\
+          & (IDw&, &relg&, &z &) \vdash   & (w&,  &ID\:EQ\:IDg&, &z5 &) \\
+          & (IDw&, &relg&, &z &) \vdash   & (w&,  &ID\:LEQ\:IDg&, &z6 &)
+\end{aligned}
+\end{equation*}
+
+\subsection*{b)}
+
+\begin{equation*}
+  \begin{aligned}
+   &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,& start&,& &) \\
+\vdash &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,& guard&,& 1&) \\
+\vdash &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,& guard\:AND\:guard&,& 13&) \\
+\vdash &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,& rel\:AND\:guard&,& 132&) \\
+\vdash &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,&\:ID\:EQ\:ID\:AND\:guard&,& 1325&) \\
+\vdash &(&EQ\:ID\:AND\:ID\:LEQ\:ID&,& EQ\:ID\:AND\:guard&,& 1325&) \\
+\vdash &(&ID\:AND\:ID\:LEQ\:ID&,&\:ID\:AND\:guard&,& 1325&) \\
+\vdash &(&AND\:ID\:LEQ\:ID&,&\:AND\:guard&,& 1325&) \\
+\vdash &(&ID\:LEQ\:ID&,& guard&,& 1325&) \\
+\vdash &(&ID\:LEQ\:ID&,& rel&,& 13252&) \\
+\vdash &(&ID\:LEQ\:ID&,&\:ID\:LEQ\:ID&,& 132526&) \\
+\vdash &(&LEQ\:ID&,& LEQ\:ID&,& 132526&) \\
+\vdash &(&ID&,&\:ID&,& 132526&) \\
+\vdash &(&&,& &,& 132526&) \\
+\end{aligned}
+\end{equation*}
+
+\subsection*{c)}
+Removal of left recursion:
+
+\begin{enumerate}
+\item start $\rightarrow$ guard
+\item guard $\rightarrow$ rel guard'
+\item guard' $\rightarrow$ AND guard guard'
+\item guard' $\rightarrow$ OR guard guard'
+\item guard' $\rightarrow$  
+\end{enumerate}
+
+Left factorization:
+
+\begin{enumerate}
+\item rel $\rightarrow$\:ID\:rel'
+\item rel' $\rightarrow$ EQ\:ID
+\item rel' $\rightarrow$ LEQ\:ID
+\end{enumerate}
