@@ -16,7 +16,7 @@ Matching Steps:
           & (ANDw&, &ANDg&, &z &) \vdash   & (w&,  &g&, &z &) \\
           & (ORw&, &ORg&, &z &) \vdash   & (w&,  &g&, &z &) \\
           & (IDw&, &IFg&, &z &) \vdash   & (w&,  &g&, &z &) \\
-          & (EQw&, &EQw&, &z &) \vdash   & (w&,  &g&, &z &) \\
+          & (EQw&, &EQg&, &z &) \vdash   & (w&,  &g&, &z &) \\
           & (LEQw&, &LEQg&, &z &) \vdash   & (w&,  &g&, &z &)
 \end{aligned}
 \end{equation*}
@@ -65,7 +65,7 @@ Removal of left recursion:
 \item guard $\rightarrow$ rel guard'
 \item guard' $\rightarrow$ AND guard guard'
 \item guard' $\rightarrow$ OR guard guard'
-\item guard' $\rightarrow$  
+\item guard' $\rightarrow$  $\epsilon$
 \end{enumerate}
 
 Left factorization:
