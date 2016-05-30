@@ -28,11 +28,11 @@ Transition steps:
           & (IDw&, &startg&, &z &) \vdash   & (w&,  &guardg&, &z1 &) \\
           & \\
           & (IDw&, &guardg&, &z &) \vdash   & (w&,  &relg&, &z2 &) \\
-          & (IDw&, &guardg&, &z &) \vdash   & (w&,  &guard\:AND\:guardg&, &z3 &) \\
-          & (IDw&, &guardg&, &z &) \vdash   & (w&,  &guard\:OR\:guardg&, &z4 &) \\
+          & (IDw&, &guardg&, &z &) \vdash   & (w&,  &guard\;AND\;guardg&, &z3 &) \\
+          & (IDw&, &guardg&, &z &) \vdash   & (w&,  &guard\;OR\;guardg&, &z4 &) \\
           & \\
-          & (IDw&, &relg&, &z &) \vdash   & (w&,  &ID\:EQ\:IDg&, &z5 &) \\
-          & (IDw&, &relg&, &z &) \vdash   & (w&,  &ID\:LEQ\:IDg&, &z6 &)
+          & (IDw&, &relg&, &z &) \vdash   & (w&,  &ID\;EQ\;IDg&, &z5 &) \\
+          & (IDw&, &relg&, &z &) \vdash   & (w&,  &ID\;LEQ\;IDg&, &z6 &)
 \end{aligned}
 \end{equation*}
 
@@ -40,19 +40,19 @@ Transition steps:
 
 \begin{equation*}
   \begin{aligned}
-   &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,& start&,& &) \\
-\vdash &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,& guard&,& 1&) \\
-\vdash &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,& guard\:AND\:guard&,& 13&) \\
-\vdash &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,& rel\:AND\:guard&,& 132&) \\
-\vdash &(&ID\:EQ\:ID\:AND\:ID\:LEQ\:ID&,&\:ID\:EQ\:ID\:AND\:guard&,& 1325&) \\
-\vdash &(&EQ\:ID\:AND\:ID\:LEQ\:ID&,& EQ\:ID\:AND\:guard&,& 1325&) \\
-\vdash &(&ID\:AND\:ID\:LEQ\:ID&,&\:ID\:AND\:guard&,& 1325&) \\
-\vdash &(&AND\:ID\:LEQ\:ID&,&\:AND\:guard&,& 1325&) \\
-\vdash &(&ID\:LEQ\:ID&,& guard&,& 1325&) \\
-\vdash &(&ID\:LEQ\:ID&,& rel&,& 13252&) \\
-\vdash &(&ID\:LEQ\:ID&,&\:ID\:LEQ\:ID&,& 132526&) \\
-\vdash &(&LEQ\:ID&,& LEQ\:ID&,& 132526&) \\
-\vdash &(&ID&,&\:ID&,& 132526&) \\
+   &(&ID\;EQ\;ID\;AND\;ID\;LEQ\;ID&,& start&,& &) \\
+\vdash &(&ID\;EQ\;ID\;AND\;ID\;LEQ\;ID&,& guard&,& 1&) \\
+\vdash &(&ID\;EQ\;ID\;AND\;ID\;LEQ\;ID&,& guard\;AND\;guard&,& 13&) \\
+\vdash &(&ID\;EQ\;ID\;AND\;ID\;LEQ\;ID&,& rel\;AND\;guard&,& 132&) \\
+\vdash &(&ID\;EQ\;ID\;AND\;ID\;LEQ\;ID&,&\;ID\;EQ\;ID\;AND\;guard&,& 1325&) \\
+\vdash &(&EQ\;ID\;AND\;ID\;LEQ\;ID&,& EQ\;ID\;AND\;guard&,& 1325&) \\
+\vdash &(&ID\;AND\;ID\;LEQ\;ID&,&\;ID\;AND\;guard&,& 1325&) \\
+\vdash &(&AND\;ID\;LEQ\;ID&,&\;AND\;guard&,& 1325&) \\
+\vdash &(&ID\;LEQ\;ID&,& guard&,& 1325&) \\
+\vdash &(&ID\;LEQ\;ID&,& rel&,& 13252&) \\
+\vdash &(&ID\;LEQ\;ID&,&\;ID\;LEQ\;ID&,& 132526&) \\
+\vdash &(&LEQ\;ID&,& LEQ\;ID&,& 132526&) \\
+\vdash &(&ID&,&\;ID&,& 132526&) \\
 \vdash &(&&,& &,& 132526&) \\
 \end{aligned}
 \end{equation*}
@@ -71,7 +71,50 @@ Removal of left recursion:
 Left factorization:
 
 \begin{enumerate}
-\item rel $\rightarrow$\:ID\:rel'
-\item rel' $\rightarrow$ EQ\:ID
-\item rel' $\rightarrow$ LEQ\:ID
+\item rel $\rightarrow$\;ID\;rel'
+\item rel' $\rightarrow$ EQ\;ID
+\item rel' $\rightarrow$ LEQ\;ID
 \end{enumerate}
+
+
+\subsection*{d)}
+
+\begin{footnotesize}
+
+\begin{tabular}{ *{12}{|@{\hspace{2pt}}c@{\hspace{2pt}}} }
+act & start & guard & guard' & rel & rel' & AND & OR & ID & EQ & LEQ & $\epsilon$	\\
+AND	&error	&error&	(AND guard guard', 3)	&error	&error	&pop	&error	&error	&error	&error	&error	\\
+OR	&error	&error&	(OR guard guard', 4)	&error	&error	&error	&pop	&error	&error	&error	&error	\\
+ID	&(guard, 1)	&(rel guard', 2)	&error	&(ID rel',6)	&error	&error	&error	&pop	&error	&error	&error	\\
+EQ	&error	&error	&error	&error	&(EQ ID, 7)&	error&	error&	error&	pop	&error	&error	\\
+LEQ	&error	&error	&error	&error&	(LEQ ID, 8)	&error	&error&	error	&error&	pop&	error	\\
+$\epsilon$	&error	&error	&('epsilon, 5)&	error	&error&	error&	error&	error&	error	&error	&accept
+\end{tabular}
+\end{footnotesize}
+
+\subsection*{e)}
+\begin{equation*}
+  \begin{aligned}
+   	   &(&ID\;EQ\;ID\;AND\;ID\;LEQ\;ID&,& start,& )\\
+\vdash &(&ID\;EQ\;ID\;AND\;ID\;LEQ\;ID&,& guard,& 1)\\
+\vdash &(&ID\;EQ\;ID\;AND\;ID\;LEQ\;ID&,& rel guard',& 12)\\
+\vdash &(&ID\;EQ\;ID\;AND\;ID\;LEQ\;ID&,&\;ID\;rel' guard',& 126)\\
+\vdash &(&EQ\;ID\;AND\;ID\;LEQ\;ID&,& rel' guard',& 126)\\
+\vdash &(&EQ\;ID\;AND\;ID\;LEQ\;ID&,& rel' guard',& 126)\\
+\vdash &(&EQ\;ID\;AND\;ID\;LEQ\;ID&,& EQ\;ID\;guard',& 1267)\\
+\vdash &(&ID\;AND\;ID\;LEQ\;ID,&\;ID\;guard'&,& 1267)\\
+\vdash &(&AND\;ID\;LEQ\;ID,& guard'&,& 1267)\\
+\vdash &(&AND\;ID\;LEQ\;ID,& AND guard guard'&,& 12673)\\
+\vdash &(&ID\;LEQ\;ID,& guard guard'&,& 12673)\\
+\vdash &(&ID\;LEQ\;ID,& rel guard' guard'&,& 126732)\\
+\vdash &(&ID\;LEQ\;ID,&\;ID\;rel' guard' guard'&,& 1267326)\\
+\vdash &(&LEQ\;ID,& rel' guard' guard'&,& 1267326)\\
+\vdash &(&LEQ\;ID,& LEQ\;ID\;guard' guard'&,& 12673268)\\
+\vdash &(&ID,&\;ID\;guard' guard'&,& 12673268)\\
+\vdash &(&,& guard' guard'&,& 12673268)\\
+\vdash &(&,& guard'&,& 126732685)\\
+\vdash &(&,& &,& 1267326855)
+\end{aligned}
+\end{equation*}
+
+$\rightarrow accept$
