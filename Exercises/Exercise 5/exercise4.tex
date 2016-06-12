@@ -1,0 +1,98 @@
+\begin{equation*}
+\begin{split}
+	G &= (N, \Sigma, P, S') \\[1ex]
+	N &= \{ S', S \} \\[1ex]
+	\Sigma &= \{ (, \neg, \land, true, false \} \\[1ex]
+	S' &\rightarrow S \quad(0) \\
+	S &\rightarrow (S \land S) \,|\, \neg S \,|\, true \,|\, false \quad(1, 2, 3, 4)
+\end{split}
+\end{equation*}
+
+\subsection*{a)}
+
+\begin{equation*}
+\begin{split}
+	I_0 := LR(0)(\epsilon):\quad &[S' \rightarrow \cdot S][S \rightarrow \cdot (S\land S)][S \rightarrow \cdot \neg S][S \rightarrow \cdot true][S \rightarrow \cdot false]\\
+	I_1 := LR(0)(S):\quad &[S' \rightarrow S \cdot]\\
+	I_2 := LR(0)(():\quad &[S \rightarrow (\cdot S \land S)][S \rightarrow \cdot (S\land S)][S \rightarrow \cdot \neg S][S \rightarrow \cdot true][S \rightarrow \cdot false]\\
+	I_3 := LR(0)(\neg ):\quad &[S \rightarrow \neg \cdot S][S \rightarrow \cdot (S\land S)][S \rightarrow \cdot \neg S][S \rightarrow \cdot true][S \rightarrow \cdot false]\\
+	I_4 := LR(0)(true):\quad &[S \rightarrow true \cdot]\\
+	I_5 := LR(0)(false):\quad &[S \rightarrow false \cdot]\\
+	I_6 := LR(0)((S):\quad &[S \rightarrow (S \cdot \land S)]\\
+	I_7 := LR(0)(\neg S):\quad &[S \rightarrow \neg S \cdot]\\
+	I_8 := LR(0)((S \land):\quad &[S \rightarrow (S \land \cdot S)][S \rightarrow \cdot (S\land S)][S \rightarrow \cdot \neg S][S \rightarrow \cdot true][S \rightarrow \cdot false]\\
+	I_9 := LR(0)((S \land S):\quad &[S \rightarrow (S \land S \cdot )]\\
+	I_{10} := LR(0)((S \land S)):\quad &[S \rightarrow (S \land S) \cdot]\\
+\end{split}
+\end{equation*}
+\begin{equation*}
+\begin{split}
+	LR(0)(\alpha(, \alpha \in X^* reachable) = I_2\\
+	LR(0)(\alpha\neg , \alpha \in X^* reachable) = I_3\\
+	LR(0)(\alpha true, \alpha \in X^* reachable) = I_4\\
+	LR(0)(\alpha false, \alpha \in X^* reachable) = I_5\\
+\end{split}
+\end{equation*}
+\begin{equation*}
+\begin{split}
+	I_{11} := LR(0)(\gamma) = \emptyset \text{, for all remaining cases} \,\gamma
+\end{split}
+\end{equation*}
+
+\subsection*{b)}
+
+DFA:
+\begin{itemize}
+\item Input alphabet: $\Sigma$
+\item Pushdown alphabet: $\Gamma := LR(0)(G)$
+\item Output alphabet: $\Delta := [p] \cup \{ 0, error\}$
+\item Configurations: $\Sigma^* \times \Gamma^* \times \Delta^*$
+\item Initial configuration: $(w, I_0, \epsilon)$, where w is the word to be decided
+\item Final configuaritions: $\{\epsilon\} \times \{\epsilon\} \times \Delta^*$
+
+\item Parsing Table:
+\begin{tabular}{ | c | c | c c c c c c c | }
+\hline
+$LR(0)(G)$ 	& act 	&		&		&		& goto	&		&		&		\\
+			&		& S		& true	& false	&$\land$&$\neg$ & (		& )		\\
+\hline
+$I_0$		& shift & $I_1$ & $I_4$ & $I_5$ &		& $I_3$ & $I_2$ &		\\
+$I_1$		& accept&		&		&		&		&		&		&		\\
+$I_2$		& shift & $I_6$ & $I_4$ & $I_5$ &		& $I_3$ & $I_2$ &		\\
+$I_3$		& shift & $I_7$ & $I_4$ & $I_5$ &		& $I_3$ & $I_2$ &		\\
+$I_4$		& red 3 &		&		&		&		&		&		&		\\
+$I_5$		& red 4 &		&		&		&		&		&		&		\\
+$I_6$		& shift & 		&		&		& $I_8$ &		&		&		\\
+$I_7$		& red 2 &		&		&		&		&		&		&		\\
+$I_8$		& shift & $I_9$ & $I_4$ & $I_5$ &		& $I_3$ & $I_2$ &		\\
+$I_9$		& shift &		&		&		&		&		&		& $I_{10}$\\
+$I_{10}$	& red 1 &		&		&		&		&		&		&		\\
+$I_{11}$	& error &		&		&		&		&		&		&		\\
+\hline
+\end{tabular}
+\end{itemize}
+
+\subsection*{c)}
+
+\begin{equation*}
+\begin{aligned}
+	   &(& ((\neg true \land false) \land false) &,& I_0 &,& \epsilon &) \\
+\vdash &(& (\neg true \land false) \land false) &,& I_0I_2 &,& \epsilon &) \\
+\vdash &(& \neg true \land false) \land false) &,& I_0I_2I_2 &,& \epsilon &) \\
+\vdash &(& true \land false) \land false) &,& I_0I_2I_2I_3 &,& \epsilon &) \\
+\vdash &(& \land false) \land false) &,& I_0I_2I_2I_3I_4 &,& \epsilon &) \\
+\vdash &(& \land false) \land false) &,& I_0I_2I_2I_3I_7 &,& 3 &) \\
+\vdash &(& \land false) \land false) &,& I_0I_2I_2I_6 &,& 32 &) \\
+\vdash &(& false) \land false) &,& I_0I_2I_2I_6I_8 &,& 32 &) \\
+\vdash &(& ) \land false) &,& I_0I_2I_2I_6I_8I_5 &,& 32 &) \\
+\vdash &(& ) \land false) &,& I_0I_2I_2I_6I_8I_9 &,& 324 &) \\
+\vdash &(& \land false) &,& I_0I_2I_2I_6I_8I_9I_{10} &,& 324 &) \\
+\vdash &(& \land false) &,& I_0I_2I_6 &,& 3241 &) \\
+\vdash &(& false) &,& I_0I_2I_6I_8 &,& 3241 &) \\
+\vdash &(& ) &,& I_0I_2I_6I_8I_5 &,& 3241 &) \\
+\vdash &(& ) &,& I_0I_2I_6I_8I_9 &,& 32414 &) \\
+\vdash &(& \epsilon &,& I_0I_2I_6I_8I_9I_{10} &,& 32414 &) \\
+\vdash &(& \epsilon &,& I_0I_1 &,& 324141 &) \\
+\vdash &(& \epsilon &,& \epsilon &,& 3241410 &)
+\end{aligned}
+\end{equation*}

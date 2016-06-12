@@ -1,11 +1,11 @@
 First, we have to start separate $G$:
 \begin{equation*}
 \begin{split}
-	S' &\rightarrow S  (0)\\
-	S &\rightarrow A_1b_1 \,|\, A_2b_2 \,|\, A_3b_3 (1, 2, 3)\\
-	A_1 &\rightarrow a_2A_1 \,|\, a_3A_1 \,|\, a_2 \,|\, a_3 (4, 5, 6, 7)\\
-	A_2 &\rightarrow a_1A_2 \,|\, a_3A_2 \,|\, a_1 \,|\, a_3 (8, 9, 10, 11)\\
-	A_3 &\rightarrow a_1A_3 \,|\, a_2A_3 \,|\, a_1 \,|\, a_2 (12, 13, 14, 15)
+	S' &\rightarrow S \quad(0)\\
+	S &\rightarrow A_1b_1 \,|\, A_2b_2 \,|\, A_3b_3 \quad(1, 2, 3)\\
+	A_1 &\rightarrow a_2A_1 \,|\, a_3A_1 \,|\, a_2 \,|\, a_3 \quad(4, 5, 6, 7)\\
+	A_2 &\rightarrow a_1A_2 \,|\, a_3A_2 \,|\, a_1 \,|\, a_3 \quad(8, 9, 10, 11)\\
+	A_3 &\rightarrow a_1A_3 \,|\, a_2A_3 \,|\, a_1 \,|\, a_2 \quad(12, 13, 14, 15)
 \end{split}
 \end{equation*}
 
@@ -74,6 +74,11 @@ LR(0)(\alpha a_1A_2, \alpha \in \{a_i^+, i \in \{1, 3\}\}) &= I_{19}\\
 LR(0)(\alpha a_1A_3, \alpha \in \{a_i^+, i \in \{1, 2\}\}) &= I_{20}\\
 LR(0)(\alpha a_3, \alpha \in \{a_i^+, i \in \{1, 3\}\} \backslash \{a_3^+\}) &= I_{21}\\
 LR(0)(\alpha a_2, \alpha \in \{a_i^+, i \in \{1, 2\}\} \backslash \{a_2^+\}) &= I_{22}\\
+\end{split}
+\end{equation*}
+\begin{equation*}
+\begin{split}
+	I_{23} := LR(0)(\gamma) = \emptyset \text{, for all remaining cases} \,\gamma
 \end{split}
 \end{equation*}
 \subsection*{b)}
