@@ -1,0 +1,4 @@
+Let $L$ be a deterministic context free Language that is not prefix free. We know that if Language $L \in \mathcal{L}(LR(0))$, a deterministic push-down automata (DPDA) $M$ exists recognizing $L$ without any shift/reduce or reduce/reduce conflicts.
+
+We show that no such DPDA $M$ can exist if $L$ is not prefix free.
+For any word $w \in L$ the DPDA $M$ accepts iff the stack is empty after executing the automation $M$. Let $u, v \in \Sigma^+$ such that $u \in L$. We show that no $v$ with $uv \in L$ can exist. Since $u \in L$, $M$ transitions to an accepting state after recognizing $u$. As $M$ cannot contain any conflicts, no $v \in \Sigma^+$ can exist with $uv \in L$, since its existence would mean $uv \in L$ for any arbitrary $v \in \Sigma^+$. Otherwise a conflict would be induced.
