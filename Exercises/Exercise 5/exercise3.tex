@@ -1,0 +1,83 @@
+First, we have to start separate $G$:
+\begin{equation*}
+\begin{split}
+	S' &\rightarrow S  (0)\\
+	S &\rightarrow A_1b_1 \,|\, A_2b_2 \,|\, A_3b_3 (1, 2, 3)\\
+	A_1 &\rightarrow a_2A_1 \,|\, a_3A_1 \,|\, a_2 \,|\, a_3 (4, 5, 6, 7)\\
+	A_2 &\rightarrow a_1A_2 \,|\, a_3A_2 \,|\, a_1 \,|\, a_3 (8, 9, 10, 11)\\
+	A_3 &\rightarrow a_1A_3 \,|\, a_2A_3 \,|\, a_1 \,|\, a_2 (12, 13, 14, 15)
+\end{split}
+\end{equation*}
+
+\subsection*{a)}
+
+\begin{equation*}
+\begin{split}
+	I_0 := LR(0)(\epsilon):\quad &[S' \rightarrow \cdot S][S \rightarrow \cdot A_1b_1][S \rightarrow \cdot A_2b_2][S \rightarrow \cdot A_3b_3][A_1 \rightarrow \cdot a_2A_1]\\ 
+	&[A_1 \rightarrow \cdot a_3A_1][A_1 \rightarrow \cdot a_2][A_1 \rightarrow \cdot a_3][A_2 \rightarrow \cdot a_1A_2][A_2 \rightarrow \cdot a_3A_2]\\ 
+	&[A_2 \rightarrow \cdot a_1][A_2 \rightarrow \cdot a_3][A_3 \rightarrow \cdot a_1A_3][A_3 \rightarrow \cdot a_2A_3][A_3 \rightarrow \cdot a_1]\\
+	&[A_3 \rightarrow \cdot a_2]\\
+	I_1 := LR(0)(S):\quad &[S' \rightarrow S \cdot]\\
+	I_2 := LR(0)(A_1):\quad &[S \rightarrow A_1 \cdot b_1]\\
+	I_3 := LR(0)(A_2):\quad &[S \rightarrow A_2 \cdot b_2]\\
+	I_4 := LR(0)(A_3):\quad &[S \rightarrow A_3 \cdot b_3]\\
+	I_5 := LR(0)(a_2):\quad &[A_1 \rightarrow a_2 \cdot][A_1 \rightarrow a_2 \cdot A_1][A_3 \rightarrow a_2 \cdot][A_3 \rightarrow a_2 \cdot A_3][A_1 \rightarrow \cdot a_2A_1]\\ 
+	&[A_1 \rightarrow \cdot a_3A_1][A_1 \rightarrow \cdot a_2][A_1 \rightarrow \cdot a_3][A_3 \rightarrow \cdot a_1A_3][A_3 \rightarrow \cdot a_2A_3]\\ 
+	&[A_3 \rightarrow \cdot a_1][A_3 \rightarrow \cdot a_2]\\
+	I_6 := LR(0)(a_3):\quad &[A_1 \rightarrow a_3 \cdot][A_1 \rightarrow a_3 \cdot A_1][A_2 \rightarrow a_3 \cdot][A_2 \rightarrow a_3 \cdot A_2][A_1 \rightarrow \cdot a_2A_1]\\ 
+	&[A_1 \rightarrow \cdot a_3A_1][A_1 \rightarrow \cdot a_2][A_1 \rightarrow \cdot a_3][A_2 \rightarrow \cdot a_1A_2][A_2 \rightarrow \cdot a_3A_2]\\
+	&[A_2 \rightarrow \cdot a_1][A_2 \rightarrow \cdot a_3]\\
+	I_7 := LR(0)(a_1):\quad &[A_2 \rightarrow a_1 \cdot][A_2 \rightarrow a_1 \cdot A_2][A_3 \rightarrow a_1 \cdot][A_3 \rightarrow a_1 \cdot A_3][A_2 \rightarrow \cdot a_1A_2]\\ 
+	&[A_2 \rightarrow \cdot a_3A_2][A_2 \rightarrow \cdot a_1][A_2 \rightarrow \cdot a_3][A_3 \rightarrow \cdot a_1A_3][A_3 \rightarrow \cdot a_2A_3]\\ 
+	&[A_3 \rightarrow \cdot a_1][A_3 \rightarrow \cdot a_2]\\
+	I_8 := LR(0)(A_1b_1):\quad &[S \rightarrow A_1b_1 \cdot]\\
+	I_9 := LR(0)(A_2b_2):\quad &[S \rightarrow A_2b_2 \cdot]\\
+	I_{10} := LR(0)(A_3b_3):\quad &[S \rightarrow A_3b_3 \cdot]\\
+	I_{11} := LR(0)(a_2A_1):\quad &[A_1 \rightarrow a_2A_1 \cdot]\\
+	I_{12} := LR(0)(a_2A_3):\quad &[A_3 \rightarrow a_2A_3 \cdot]\\
+	I_{13} := LR(0)(a_2a_3):\quad &[A_1 \rightarrow a_3 \cdot][A_1 \rightarrow a_3 \cdot A_1][A_1 \rightarrow \cdot a_2A_1][A_1 \rightarrow \cdot a_3A_1][A_1 \rightarrow \cdot a_2]\\
+	&[A_1 \rightarrow \cdot a_3]\\
+	I_{14} := LR(0)(a_2a_1):\quad &[A_3 \rightarrow a_1 \cdot][A_3 \rightarrow a_1 \cdot A_3][A_3 \rightarrow \cdot a_1A_3][A_3 \rightarrow \cdot a_2A_3][A_3 \rightarrow \cdot a_1]\\
+	&[A_3 \rightarrow \cdot a_2]\\
+	I_{15} := LR(0)(a_3A_1):\quad &[A_1 \rightarrow a_3A_1 \cdot]\\
+	I_{16} := LR(0)(a_3A_2):\quad &[A_2 \rightarrow a_3A_2 \cdot]\\
+	I_{17} := LR(0)(a_3a_2):\quad &[A_1 \rightarrow a_2 \cdot][A_1 \rightarrow a_2 \cdot A_1][A_1 \rightarrow \cdot a_2A_1][A_1 \rightarrow \cdot a_3A_1][A_1 \rightarrow \cdot a_2]\\
+	&[A_1 \rightarrow \cdot a_3]\\
+	I_{18} := LR(0)(a_3a_1):\quad &[A_2 \rightarrow a_1 \cdot][A_2 \rightarrow a_1 \cdot A_2][A_2 \rightarrow \cdot a_1A_2][A_2 \rightarrow \cdot a_3A_2][A_2 \rightarrow \cdot a_1]\\
+	&[A_2 \rightarrow \cdot a_3]
+\end{split}
+\end{equation*}
+\begin{equation*}
+\begin{split}
+	I_{19} := LR(0)(a_1A_2):\quad &[A_2 \rightarrow a_1A_2 \cdot]\\
+	I_{20} := LR(0)(a_1A_3):\quad &[A_3 \rightarrow a_1A_3 \cdot]\\
+	I_{21} := LR(0)(a_1a_3):\quad &[A_2 \rightarrow a_3 \cdot][A_2 \rightarrow a_3 \cdot A_2][A_2 \rightarrow \cdot a_1A_2][A_2 \rightarrow \cdot a_3A_2][A_2 \rightarrow \cdot a_1]\\
+	&[A_2 \rightarrow \cdot a_3]\\
+	I_{22} := LR(0)(a_1a_2):\quad &[A_3 \rightarrow a_2 \cdot][A_3 \rightarrow a_2 \cdot A_3][A_3 \rightarrow \cdot a_1A_3][A_3 \rightarrow \cdot a_2A_3][A_3 \rightarrow \cdot a_1]\\
+	&[A_3 \rightarrow \cdot a_2]\\
+\end{split}
+\end{equation*}
+\begin{equation*}
+\begin{split}
+LR(0)(a_2^*) &= I_5\\
+LR(0)(a_3^*) &= I_6\\
+LR(0)(a_1^*) &= I_7\\
+LR(0)(\alpha a_2A_1, \alpha \in \{a_i^+, i \in \{2, 3\}\}) &= I_{11}\\
+LR(0)(\alpha a_2A_3, \alpha \in \{a_i^+, i \in \{1, 2\}\}) &= I_{12}\\
+LR(0)(\alpha a_3, \alpha \in \{a_i^+, i \in \{2, 3\}\} \backslash \{a_3^+\}) &= I_{13}\\
+LR(0)(\alpha a_1, \alpha \in \{a_i^+, i \in \{1, 2\}\} \backslash \{a_1^+\}) &= I_{14}\\
+LR(0)(\alpha a_3A_1, \alpha \in \{a_i^+, i \in \{2, 3\}\}) &= I_{15}\\
+LR(0)(\alpha a_3A_2, \alpha \in \{a_i^+, i \in \{1, 3\}\}) &= I_{16}\\
+LR(0)(\alpha a_2, \alpha \in \{a_i^+, i \in \{2, 3\}\} \backslash \{a_2^+\}) &= I_{17}\\
+LR(0)(\alpha a_1, \alpha \in \{a_i^+, i \in \{1, 3\}\} \backslash \{a_1^+\}) &= I_{18}\\
+LR(0)(\alpha a_1A_2, \alpha \in \{a_i^+, i \in \{1, 3\}\}) &= I_{19}\\
+LR(0)(\alpha a_1A_3, \alpha \in \{a_i^+, i \in \{1, 2\}\}) &= I_{20}\\
+LR(0)(\alpha a_3, \alpha \in \{a_i^+, i \in \{1, 3\}\} \backslash \{a_3^+\}) &= I_{21}\\
+LR(0)(\alpha a_2, \alpha \in \{a_i^+, i \in \{1, 2\}\} \backslash \{a_2^+\}) &= I_{22}\\
+\end{split}
+\end{equation*}
+\subsection*{b)}
+A grammar has the SLR(1) property if its action function is well-defined. The action function can only be not well-defined if for any combination $(I, x)$, the result is ambiguous. This can happen in 2 different ways: reduct/reduct or shift/reduct.\\
+For reduct/reduct, any set $I_i$ has to contain either 2 elements $[A \rightarrow \alpha \cdot]$ and $[A \rightarrow \beta \cdot]$, $\alpha \neq \beta$ or 2 elements $[A \rightarrow \alpha \cdot]$ and $[B \rightarrow \beta \cdot]$, $A \neq B$ with $x \in fo(A) \cap fo(B)$. The first of these 2 possibilities can not occur for $G$, since there are no such 2 elements in any $I_i$. The second one can also not occur since $fo(S) = \{\epsilon\}, fo(A_1) = \{b_1\}, fo(A_2) = \{b_2\}, fo(A_3) = \{b_3\}$ are disjunct.\\
+For shift/reduct, we require that in some $I_i$ there exists an element $[A \rightarrow \alpha_1 \cdot x \alpha_2]$, where $x$ is a terminal symbol and at the same time, there has to be an element $[A \rightarrow \alpha \cdot]$, where $x \in fo(A)$. Since in $G$, the only elements in all $fo$-sets are $\{ b_1, b_2, b_3\}$, we only have to look at $I_i$ with some $[A \rightarrow \alpha_1 \cdot b_i \alpha_2]$. These are $I_2, I_3, I_4$. However these 3 only have one element each, so they can't produce a shift/reduce.\\
+Since there are no conflicts in $G$ that could break the well-definedness of its action function, we have $G \in SLR(1)$.

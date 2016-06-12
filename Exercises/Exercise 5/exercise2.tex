@@ -1,0 +1,24 @@
+\subsection*{a)}
+Following example 8.16 from the lecture, we have $G =$
+\begin{equation*}
+\begin{split}
+	S' &\rightarrow S \\
+	S &\rightarrow B \,|\, C \\
+	B &\rightarrow aB \,|\, b \\
+	C &\rightarrow aC \,|\, c
+\end{split}
+\end{equation*}
+As proven in the lecture, $G \in LR(0)$. However, since
+\begin{equation*}
+\begin{split}
+	S' &\Rightarrow_l^* S \begin{cases}\Rightarrow_l B\\ \Rightarrow_l C\end{cases} \\
+	fi(B) &= \{ a, b\} \\
+	fi(C) &= \{ a, c\} \\
+	fi(B) \cap fi(C) &= \{ a\}
+\end{split}
+\end{equation*}
+$G$ is clearly not in $LL(1)$.
+
+\subsection*{b)}
+Using the result from exercise 1, any non-prefix free regular language is not in $LR(0)$.\\
+For example consider $L = \{ a, ab\}$. $L$ is clearly regular since it can be easily determined using a $DFA$. It is also not prefix-free since $L \cap L\{ b\} = \{ ab \}$. Thus, using exercise 1, $L \not\in LR(0)$.
