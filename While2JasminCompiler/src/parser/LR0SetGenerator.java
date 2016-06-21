@@ -91,7 +91,19 @@ public class LR0SetGenerator {
 	 */
 	private void generateLR0StateSpace() {
 		// TODO implement state space generation
-
+		ArrayList<LR0Set> states = new ArrayList<LR0Set>();
+		initialState = epsilonClosure(freshItems(grammar.getStart()));
+		states.add(initialState);
+		for(int i = 0; i < states.size(); i++) {
+			LR0Set set = states.get(i);
+			for(Alphabet symbol : set.getShiftableSymbols()) {
+				LR0Set fresh = epsilonClosure(set.getShiftedItemsFor(symbol));
+				if(!states.contains(fresh))
+					states.add(fresh);
+				addTransition(set, symbol, fresh);
+			}
+			addState(set);
+		}
 	}
 
 	/**
@@ -105,6 +117,18 @@ public class LR0SetGenerator {
 		// TODO it might be helpful to implement this method.
 
 		LR0Set result = new LR0Set(set.getName());
+		boolean added = false;
+		result.addAll(set);
+		for(LR0Item item : set) {
+			if(item.getNextNonTerminal() != null) {
+				for(Rule rule : grammar.getRules(item.getNextNonTerminal())) {
+					added = added || result.add(LR0Item.freshItem(rule));
+				}
+			}
+		}
+		
+		if(added)
+			result = epsilonClosure(result);
 		
 		return result;
 	}
