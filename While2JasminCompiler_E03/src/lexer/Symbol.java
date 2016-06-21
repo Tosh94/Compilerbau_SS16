@@ -1,6 +1,6 @@
 package lexer;
 
-import symbols.Tokens.Token;
+import lexer.LexerGenerator.Token;
 
 /**
  * Represents a symbol.

@@ -1,20 +1,20 @@
-package parser;
+package recursive_descent_parser;
 
 import java.util.List;
 
 /**
  * Exception thrown by the parser.
  */
-public class ParserException extends Exception {
+public class RecursiveDescentParserException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<Rule> analysisBeforeFailure = null;
+	private List<Integer> analysisBeforeFailure = null;
 
 	/**
 	 * Constructor.
 	 */
-	public ParserException() {
+	public RecursiveDescentParserException() {
 	}
 
 	/**
@@ -23,7 +23,7 @@ public class ParserException extends Exception {
 	 * @param s
 	 *            Text explaining the exception.
 	 */
-	public ParserException(String s) {
+	public RecursiveDescentParserException(String s) {
 		super(s);
 	}
 
@@ -35,7 +35,7 @@ public class ParserException extends Exception {
 	 * @param analysis
 	 *            Recognized rules up to the exception.
 	 */
-	public ParserException(String s, List<Rule> analysis) {
+	public RecursiveDescentParserException(String s, List<Integer> analysis) {
 		this(s);
 		this.analysisBeforeFailure = analysis;
 	}
@@ -45,7 +45,7 @@ public class ParserException extends Exception {
 	 * 
 	 * @return List of rules recognized before the failure.
 	 */
-	public List<Rule> getAnalysisBeforeFailure() {
+	public List<Integer> getAnalysisBeforeFailure() {
 		return analysisBeforeFailure;
 	}
 }

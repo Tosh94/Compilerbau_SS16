@@ -3,8 +3,6 @@ package lexer;
 import java.util.Iterator;
 import java.util.List;
 
-import symbols.Tokens.Token;
-
 /**
  * The lexer. Knows about the recognized alphabet and tokens and performs the
  * lexer analysis.
@@ -28,6 +26,11 @@ public class LexerGenerator {
 	// Special characters like parenthesis, line breaks, ...
 	final static protected char[] special = { ':', '=', '(', ')', '{', '}', '+', '-', '*', '/', '<', '>', '!', '%', '$',
 			'&', '|', ';', '"', ' ', '\t', '\r', '\n' };
+
+	// All recognized tokens
+	public static enum Token {
+		WHILE, WRITE, READ, INT, IF, ELSE, TRUE, FALSE, ASSIGN, LPAR, RPAR, LBRACE, RBRACE, PLUS, MINUS, TIMES, DIV, MOD, LEQ, LT, GEQ, GT, EQ, NEQ, AND, OR, NOT, INC, DEC, SEMICOLON, ID, STRING, NUMBER, COMMENT, BLANK, EOF
+	}
 
 	/**
 	 * Perform the lexer analysis.

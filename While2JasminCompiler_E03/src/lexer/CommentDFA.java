@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import util.Pair;
-import symbols.Tokens.Token;
+import lexer.LexerGenerator.Token;
 
 /**
  * DFA recognizing comments.

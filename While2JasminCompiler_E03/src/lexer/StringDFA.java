@@ -1,6 +1,6 @@
 package lexer;
 
-import symbols.Tokens.Token;
+import lexer.LexerGenerator.Token;
 import util.Pair;
 
 import java.util.Arrays;
