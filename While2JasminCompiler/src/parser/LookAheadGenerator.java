@@ -42,7 +42,35 @@ public class LookAheadGenerator {
 	public void computeFirst() {
 		first = new MapSet<NonTerminal, Alphabet>();
 		// TODO implement
-
+		boolean change = true;
+		while(change) {
+			change = false;
+			for(Rule r : grammar.getRules()){
+				int i = 0;
+				while(i < r.getRhs().length) {
+					Alphabet a = r.getRhs()[i];
+					if(a instanceof NonTerminal){
+						boolean containsEps = false;
+						for(Alphabet b : first.get((NonTerminal) a)) {
+							if(!(b instanceof Epsilon)) {
+								change = change || first.get(r.getLhs()).add(b);
+							} else {
+								containsEps = true;
+							}
+						}
+						if(!containsEps)
+							break;
+					} else if(a instanceof Token) {
+						change = change || first.get(r.getLhs()).add(a);
+						break;
+					}
+					i++;
+				}
+				if(i == r.getRhs().length) {
+					change = change || first.get(r.getLhs()).add(Epsilon.EPS);
+				}
+			}
+		}
 	}
 
 	/**
@@ -55,6 +83,28 @@ public class LookAheadGenerator {
 		follow = new MapSet<NonTerminal, Alphabet>();
 		// TODO implement
 
+		follow.get(grammar.getStart()).add(Epsilon.EPS);
+		boolean change = true;
+		while(change) {
+			change = false;
+			for(Rule r : grammar.getRules()){
+				for(int i = 0; i < r.getRhs().length - 1; i++) {
+					Alphabet a = r.getRhs()[i];
+					Alphabet b = r.getRhs()[i + 1];
+					if(a instanceof NonTerminal) {
+						if(b instanceof NonTerminal) {
+							change = change || follow.get((NonTerminal) a).addAll(first.get((NonTerminal) b));
+						} else {
+							change = change || follow.get((NonTerminal) a).add(b);
+						}
+					}
+				}
+				Alphabet a = r.getRhs()[r.getRhs().length - 1];
+				if(a instanceof NonTerminal) {
+					change = change || follow.get((NonTerminal) a).addAll(follow.get(r.getLhs()));
+				}
+			}
+		}
 	}
 
 	/**
