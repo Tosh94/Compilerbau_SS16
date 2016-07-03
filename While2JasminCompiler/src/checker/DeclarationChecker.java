@@ -48,10 +48,45 @@ public class DeclarationChecker {
 	 *         before its declaration.
 	 */
 	public boolean checkDeclaredBeforeUsed() {
-		 System.out.println(ast);
+		// System.out.println(ast);
 
 		// TODO: implement check for declaration
-
+		
+		class LocalChecker {
+			private boolean allDeclared;
+			
+			public boolean check(ASTNode root) {
+				allDeclared = true;
+				checksub(new HashSet<String>(), root);
+				return allDeclared;
+			}
+			
+			private Set<String> checksub(Set<String> declared, ASTNode root) {
+				if(root.getAlphabet().equals(NonTerminal.DECLARATION)){
+					Set<String> returnSet = new HashSet<String>();
+					returnSet.addAll(declared);
+					returnSet.add(findDeclaredID(root));
+					return returnSet;
+				} else if(root.getAlphabet().equals(Token.ID)) {
+					if(!declared.contains(root.getAttribute()))
+						allDeclared = false;
+				} else if(root.getAlphabet().equals(NonTerminal.BRANCH) || root.getAlphabet().equals(NonTerminal.LOOP)) {
+					for(ASTNode child : root.getChildren()) {
+						checksub(declared, child);
+					}
+				} else {
+					for(ASTNode child : root.getChildren()) {
+						declared = checksub(declared, child);
+					}
+				}
+				return declared;
+			}
+		}
+		
+		LocalChecker lc = new LocalChecker();
+		if(lc.check(ast.getRoot()))
+			return true;
+		
 		return false;
 	}
 
