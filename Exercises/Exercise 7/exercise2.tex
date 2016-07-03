@@ -1,0 +1,26 @@
+\subsection*{1)}
+
+$L = \lbrace a^{2^n} | n \in \mathbb{N} \rbrace$
+
+\begin{equation*}
+ 	\begin{aligned}
+ 		S &\rightarrow S' & & \text{accept} &\text{if }& ctr.1 > 0 \\
+ 		S' &\rightarrow S'S' & ctr.0 &= ctr.1 + 1 &\text{if }& ctr.1 = ctr.2 \\
+ 		S' &\rightarrow S'S' & ctr.0 &= 0 &\text{if }& ctr.1 \not= ctr.2 \\
+ 		S' &\rightarrow a & ctr.0 &= 1&&
+	\end{aligned}
+\end{equation*}
+
+\subsection*{2)}
+
+$L = \lbrace a^{n^2} | n \in \mathbb{N} \rbrace$
+
+\begin{equation*}
+ 	\begin{aligned}
+ 		S &\rightarrow S' & & \text{accept} &\text{if }& ctr.1 = 0 \\
+ 		S' &\rightarrow S''S' & ctr.0 &= ctr.2 - 1; n.0 = n.2 &\text{if }& ctr.1 + ctr.2 \geq 1 \\
+ 		S' &\rightarrow S''S' & ctr.0 &= (n.2 + 1)^2 - n.2^2); n.0 = n.2 + 1 &\text{if }& ctr.1 + ctr.2 = 0 \\
+ 		S' &\rightarrow S'' & ctr.0 &= ctr.1; n.0 = n.1 & \\
+ 		S'' &\rightarrow a & ctr.0 &= 0; n.0 = 1&&
+	\end{aligned}
+\end{equation*}
