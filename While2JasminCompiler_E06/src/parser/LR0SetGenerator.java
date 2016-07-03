@@ -91,42 +91,18 @@ public class LR0SetGenerator {
 	 */
 	private void generateLR0StateSpace() {
 		// TODO implement state space generation
-
-		// Start with the empty word
-		LR0Set epsilon = new LR0Set("");
-		assert (grammar.getRules(NonTerminal.START).size() == 1);
-		Rule startRule = grammar.getRules(grammar.getStart()).get(0);
-		epsilon.add(LR0Item.freshItem(startRule));
-		epsilon.addAll(epsilonClosure(epsilon));
-		addState(epsilon);
-		initialState = epsilon;
-
-		// While new sets were added continue building
-		Queue<LR0Set> queue = new LinkedList<LR0Set>();
-		queue.add(epsilon);
-		while (!queue.isEmpty()) {
-			LR0Set set = queue.poll();
-			for (Alphabet symbol : set.getShiftableSymbols()) {
-				LR0Set newSet = new LR0Set(set.getName() + symbol);
-				newSet.addAll(set.getShiftedItemsFor(symbol));
-				newSet.addAll(epsilonClosure(newSet));
-				if (!states.contains(newSet)) {
-					// New state
-					queue.add(newSet);
-					addState(newSet);
-				} else {
-					// State already exists
-					for (LR0Set state : states) {
-						if (state.equals(newSet)) {
-							newSet = state;
-							break;
-						}
-					}
-				}
-				if (!transitions.containsKey(new Pair<LR0Set, Alphabet>(set, symbol))) {
-					addTransition(set, symbol, newSet);
-				}
+		ArrayList<LR0Set> states = new ArrayList<LR0Set>();
+		initialState = epsilonClosure(freshItems(grammar.getStart()));
+		states.add(initialState);
+		for(int i = 0; i < states.size(); i++) {
+			LR0Set set = states.get(i);
+			for(Alphabet symbol : set.getShiftableSymbols()) {
+				LR0Set fresh = epsilonClosure(set.getShiftedItemsFor(symbol));
+				if(!states.contains(fresh))
+					states.add(fresh);
+				addTransition(set, symbol, fresh);
 			}
+			addState(set);
 		}
 	}
 
@@ -139,40 +115,22 @@ public class LR0SetGenerator {
 	 */
 	private LR0Set epsilonClosure(LR0Set set) {
 		// TODO it might be helpful to implement this method.
-		
+
 		LR0Set result = new LR0Set(set.getName());
-		ArrayList<NonTerminal> nonTerminals = new ArrayList<NonTerminal>();
-
-		// For every item of the form A -> alpha * B gamma
-		// collect the nonterminal to the right of *
-		for (LR0Item item : set) {
-			NonTerminal n = item.getNextNonTerminal();
-			if (n != null) {
-				nonTerminals.add(n);
+		boolean added = false;
+		result.addAll(set);
+		for(LR0Item item : set) {
+			if(item.getNextNonTerminal() != null) {
+				for(Rule rule : grammar.getRules(item.getNextNonTerminal())) {
+					added = added || result.add(LR0Item.freshItem(rule));
+				}
 			}
 		}
-
-		for (NonTerminal nonTerminal : nonTerminals) {
-			for (LR0Item item : freshItems(nonTerminal)) {
-				// Here we prevent the addition of items that were there
-				// already,
-				// without this we might run into infinite recursion!
-				if (!set.contains(item))
-					result.add(item);
-			}
-		}
-
-		// Recursively continue the closure since the above procedure might have
-		// introduced an item like [S->.Aa] etc...
-		// The recursion terminates when no *new* items of the above form can be
-		// found
-		if (result.size() > 0) {
-			result.addAll(set);
-			result.addAll(epsilonClosure(result));
-			return result;
-		} else {
-			return set;
-		}
+		
+		if(added)
+			result = epsilonClosure(result);
+		
+		return result;
 	}
 
 	/**
