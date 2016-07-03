@@ -42,26 +42,20 @@ public class LR0Set extends HashSet<LR0Item> {
 	 */
 	public boolean hasConflicts() {
 		// TODO implement check for conflicts
-
-		int canShift = 0;
-		int canReduce = 0;
-
-		for (LR0Item item : this) {
-			if (item.canShiftOverTerminal())
-				canShift++;
-			if (item.canReduce())
-				canReduce++;
+		boolean canReduce = false;
+		boolean canShift = false;
+		for(LR0Item item : this) {
+			if(!canReduce)
+				canReduce = item.canReduce();
+			else
+				if(item.canReduce())
+					return true;
+			if(!canShift)
+				canShift = item.canShiftOverTerminal();
 		}
-
-		if (canReduce >= 2) {
-			System.out.println("RED/RED conflict " + this);
-			return true; // reduce/reduce conflict
-		}
-		if (canReduce >= 1 && canShift >= 1) {
-			System.out.println("SFT/RED conflict " + this);
-			return true; // shift/reduce conflict
-		}
-
+		if(canReduce && canShift)
+			return true;
+		
 		return false;
 	}
 

@@ -5,10 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import util.Pair;
 import lexer.Symbol;
 import parser.grammar.AbstractGrammar;
-import symbols.Alphabet;
 import symbols.NonTerminals.NonTerminal;
 import symbols.Tokens.Token;
 
@@ -47,41 +45,64 @@ public class LR0Parser {
 		List<Rule> analysis = new LinkedList<Rule>();
 
 		// TODO implement LR(0) parser
-		
-		boolean accept = false;
-		List<Symbol> input = lexOutput;
+
+		Iterator<Symbol> it = lexOutput.iterator();
 		Stack<LR0Set> stack = new Stack<LR0Set>();
+
 		stack.push(generatorLR0.getInitialState());
-		
-		while(!accept) {
-			if(stack.peek().containsFinalItem(start)) { // act = accept
-				if(!input.isEmpty())
-					throw new ParserException("Action is accept, but input is not empty.", analysis);
-				LR0Set I = stack.pop();
-				if(stack.peek().equals(generatorLR0.getInitialState())) {
-					analysis.add(I.getCompleteItem());
-					stack.pop();
-					accept = true;
-					continue;
+
+		while (!stack.isEmpty()) {
+			LR0Set currentSet = stack.peek();
+			if (currentSet.containsFinalItem(start)) {
+				// we do not actually have to empty the stack now
+				if (!it.hasNext()) {
+					// input completely read
+					analysis.add(currentSet.getCompleteItem());
+					return analysis;
 				} else {
-					throw new ParserException("Action is accept, but state stack is not as expected.", analysis);
+					// Parser finished but there is more input
+					throw new ParserException("Parser finished but there is more unprocessed input!", analysis);
 				}
-			} else if(stack.peek().containsCompleteItem()) { // act = reduce
-				LR0Item rule = stack.peek().getCompleteItem();
-				analysis.add(rule);
-				for(int i = 0; i < rule.getRhs().length; i++) {
-					stack.pop();
-				}
-				stack.push(generatorLR0.getSuccessor(stack.peek(), rule.getLhs()));
-			} else{ 
-				if(input.isEmpty())
-					throw new ParserException("Unexpected end of input.", analysis);
-				LR0Set succ = generatorLR0.getSuccessor(stack.peek(), input.get(0).getToken());
-				if(succ != null) { // act = shift
-					input.remove(0);
-					stack.push(succ);
-				} else { // act = error
-					throw new ParserException("Could neither accept, reduce nor shift.", analysis);
+			} else {
+				if (currentSet.containsCompleteItem()) {
+					// Item of the form [A -> alpha *]
+					// Reduce
+					LR0Item completeItem = currentSet.getCompleteItem();
+					// remove |alpha| elements from the stack
+					for (int i = 0; i < completeItem.getRhs().length; i++) {
+						stack.pop();
+					}
+					// I' := Top(stack)
+					currentSet = stack.peek();
+					// J := delta(I', A)
+					LR0Set succState = generatorLR0.getSuccessor(currentSet, completeItem.getLhs());
+					if (succState == null) {
+						throw new ParserException(
+								"Tried reducing with rule " + completeItem + " but could not find a successor delta("
+										+ currentSet + ", " + completeItem.getLhs() + ")",
+								analysis);
+					}
+					stack.push(succState);
+					// append the applied rule (ensures correct order)
+					analysis.add(completeItem);
+				} else {
+					// Shift
+					if (!it.hasNext()) {
+						// nothing more to read, nothing to reduce and no final
+						// item
+						throw new ParserException("Only shift operation possible but the input terminated", analysis);
+					} else {
+						Token symbol = it.next().getToken();
+						LR0Set succState = generatorLR0.getSuccessor(currentSet, symbol);
+						if (null == succState) {
+							throw new ParserException(
+									"Tried shifting " + symbol + " onto the stack but could not find a successor delta("
+											+ currentSet + ", " + symbol + ")",
+									analysis);
+						} else {
+							stack.push(succState);
+						}
+					}
 				}
 			}
 		}
