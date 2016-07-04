@@ -1,23 +1,23 @@
 \begin{equation*}
-  \begin{aligned}
+\begin{aligned}
 E & \rightarrow F & Val.0 &=  Val.1 \\
-E & \rightarrow F + F & Val.0 &=  Val.1 + Val.2 \\
+E & \rightarrow E + F & Val.0 &=  Val.1 + Val.2 \\
 F & \rightarrow T & Val.0 &=  Val.1 \\
-F & \rightarrow T * T & Val.0 &=  Val.1 * Val.2 \\
+F & \rightarrow F * T & Val.0 &=  Val.1 * Val.2 \\
 T & \rightarrow N & Val.0 &=  Val.1 \\
 T & \rightarrow (E) & Val.0 &=  Val.1 \\
-N & \rightarrow 0 & Val.0 &=  0 \\
-N & \rightarrow 1 & Val.0 &=  1 \\
-N & \rightarrow 2 & Val.0 &=  2 \\
-N & \rightarrow 3 & Val.0 &=  3 \\
-N & \rightarrow 4 & Val.0 &=  4 \\
-N & \rightarrow 5 & Val.0 &=  5 \\
-N & \rightarrow 6 & Val.0 &=  6 \\
-N & \rightarrow 7 & Val.0 &=  7 \\
-N & \rightarrow 8 & Val.0 &=  8 \\
-N & \rightarrow 9 & Val.0 &=  9 \\
-N & \rightarrow N N' & Val.0 &=  Val.1 * 10 + Val.2 \\
-N' & \rightarrow N & Val.0 &=  Val.1
+D & \rightarrow 0 & Val.0 &=  0 \\
+D & \rightarrow 1 & Val.0 &=  1 \\
+D & \rightarrow 2 & Val.0 &=  2 \\
+D & \rightarrow 3 & Val.0 &=  3 \\
+D & \rightarrow 4 & Val.0 &=  4 \\
+D & \rightarrow 5 & Val.0 &=  5 \\
+D & \rightarrow 6 & Val.0 &=  6 \\
+D & \rightarrow 7 & Val.0 &=  7 \\
+D & \rightarrow 8 & Val.0 &=  8 \\
+D & \rightarrow 9 & Val.0 &=  9 \\
+N & \rightarrow N D & Val.0 &=  Val.1 * 10 + Val.2 \\
+N & \rightarrow D & Val.0 &=  Val.1
 \end{aligned}
 \end{equation*}
 
