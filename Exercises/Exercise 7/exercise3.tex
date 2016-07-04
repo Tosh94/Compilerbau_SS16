@@ -1,0 +1,151 @@
+\subsection*{a)}
+
+$D_{S' \rightarrow S}$:
+
+\begin{center}
+\begin{tikzpicture}[align=center,on grid,auto,node distance=1.5cm and 1cm]
+   %Syntax:
+   %\node[align=<alignment>] (<name>) [<location>] {<text>};
+   \node[align=center] (src) [] {S'};
+   \node[align=center,rounded corners=0.15cm,draw=black] (si2) [left=of src]  {i2};
+   \node[align=center,rounded corners=0.15cm,draw=black] (si1) [left=of si2]  {i1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ss2) [right=of src]  {s2};
+   \node[align=center] (dst) [below=of src] {S};
+   \node[align=center,rounded corners=0.15cm,draw=black] (di1) [left=of dst]  {i1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (di2) [left=of di1]  {i2};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ds1) [right=of dst]  {s1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ds2) [right=of ds1]  {s2};
+   
+   %Syntax:
+   %\path[<line type>]
+   % (<name of start>) edge [<textlocation>, <curve type>] {<text>} (<name of target>)
+    \path[-]
+    (src) edge [dashed] (dst)
+      ;
+    \path[->]
+    (si1) edge [] (di2)
+    (ds1) edge [bend right=30] (di1)
+    (ds2) edge [] (ss2)
+      ;
+\end{tikzpicture}
+\end{center}
+$D_{S \rightarrow AA}$:
+
+\begin{center}
+\begin{tikzpicture}[align=center,on grid,auto,node distance=1.5cm and 1cm]
+   %Syntax:
+   %\node[align=<alignment>] (<name>) [<location>] {<text>};
+   \node[align=center] (src) [] {S'};
+   \node[align=center,rounded corners=0.15cm,draw=black] (si2) [left=of src]  {i2};
+   \node[align=center,rounded corners=0.15cm,draw=black] (si1) [left=of si2]  {i1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ss1) [right=of src]  {s1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ss2) [right=of ss1]  {s2};
+   \node[align=center] (dst1) [below left=1.5cm and 3.5 cm of src] {A};
+   \node[align=center,rounded corners=0.15cm,draw=black] (d1i1) [left=of dst1]  {i1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (d1i2) [left=of d1i1]  {i2};
+   \node[align=center,rounded corners=0.15cm,draw=black] (d1s1) [right=of dst1]  {s1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (d1s2) [right=of d1s1]  {s2};
+   \node[align=center] (dst2) [below right=1.5cm and 3.5 cm of src] {A};
+   \node[align=center,rounded corners=0.15cm,draw=black] (d2i1) [left=of dst2]  {i1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (d2i2) [left=of d2i1]  {i2};
+   \node[align=center,rounded corners=0.15cm,draw=black] (d2s2) [right=of dst2]  {s2};
+   
+   %Syntax:
+   %\path[<line type>]
+   % (<name of start>) edge [<textlocation>, <curve type>] {<text>} (<name of target>)
+    \path[-]
+    (src) edge [dashed] (dst1)
+    (src) edge [dashed] (dst2)
+      ;
+    \path[->]
+    (si1) edge [] (d1i2)
+    (si2) edge [] (d2i2)
+    (d1s1) edge [bend right=30] (d1i1)
+    (d1s2) edge [] (ss1)
+    (d2s2) edge [] (ss2)
+      ;
+\end{tikzpicture}
+\end{center}
+\bigskip
+
+$D_{A \rightarrow a}$:
+
+\begin{center}
+\begin{tikzpicture}[align=center,on grid,auto,node distance=1.5cm and 1cm]
+   %Syntax:
+   %\node[align=<alignment>] (<name>) [<location>] {<text>};
+   \node[align=center] (src) [] {S};
+   \node[align=center,rounded corners=0.15cm,draw=black] (si2) [left=of src]  {i2};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ss2) [right=of src]  {s2};
+   \node[align=center] (dst) [below=of src] {A};
+   \node[align=center,rounded corners=0.15cm,draw=black] (di1) [left=of dst]  {i1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (di2) [left=of di1]  {i2};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ds2) [right=of dst]  {s2};
+   
+   %Syntax:
+   %\path[<line type>]
+   % (<name of start>) edge [<textlocation>, <curve type>] {<text>} (<name of target>)
+    \path[-]
+    (src) edge [dashed] (dst)
+      ;
+    \path[->]
+    (si2) edge [] (di2)
+    (ds2) edge [] (ss2)
+      ;
+\end{tikzpicture}
+\end{center}
+\bigskip
+\begin{minipage}{0.5\textwidth} 
+$D_{A \rightarrow b}$:
+
+
+\begin{center}
+\begin{tikzpicture}[align=center,on grid,auto,node distance=1.5cm and 1cm]
+   %Syntax:
+   %\node[align=<alignment>] (<name>) [<location>] {<text>};
+   \node[align=center] (src) [] {S};
+   \node[align=center,rounded corners=0.15cm,draw=black] (si1) [left=of src]  {i1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ss1) [right=of src]  {s1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ss2) [right=of ss1]  {s2};
+   \node[align=center] (dst) [below=of src] {A};
+   
+   %Syntax:
+   %\path[<line type>]
+   % (<name of start>) edge [<textlocation>, <curve type>] {<text>} (<name of target>)
+    \path[-]
+    (src) edge [dashed] (dst)
+      ;
+    \path[->]
+    (si1) edge [bend right=30] (ss2)
+      ;
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+\begin{minipage}{0.5\textwidth} 
+$D_{A \rightarrow b}$:
+
+
+\begin{center}
+\begin{tikzpicture}[align=center,on grid,auto,node distance=1.5cm and 1cm]
+   %Syntax:
+   %\node[align=<alignment>] (<name>) [<location>] {<text>};
+   \node[align=center] (src) [] {S};
+   \node[align=center,rounded corners=0.15cm,draw=black] (si2) [left=of src]  {i2};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ss1) [right=of src]  {s1};
+   \node[align=center,rounded corners=0.15cm,draw=black] (ss2) [right=of ss1]  {s2};
+   \node[align=center] (dst) [below=of src] {A};
+   
+   %Syntax:
+   %\path[<line type>]
+   % (<name of start>) edge [<textlocation>, <curve type>] {<text>} (<name of target>)
+    \path[-]
+    (src) edge [dashed] (dst)
+      ;
+    \path[->]
+    (si2) edge [bend right=30] (ss1)
+      ;
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+
+\subsection*{b)}
