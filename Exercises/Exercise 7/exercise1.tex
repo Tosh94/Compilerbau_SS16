@@ -1,63 +1,127 @@
+Grammar (Start symbol $S$):
+
 \begin{equation*}
-  \begin{aligned}
+\begin{aligned}
+S & \rightarrow E & Val.0 &=  Val.1 \\
 E & \rightarrow F & Val.0 &=  Val.1 \\
-E & \rightarrow F + F & Val.0 &=  Val.1 + Val.2 \\
+E & \rightarrow E + F & Val.0 &=  Val.1 + Val.3 \\
 F & \rightarrow T & Val.0 &=  Val.1 \\
-F & \rightarrow T * T & Val.0 &=  Val.1 * Val.2 \\
+F & \rightarrow F * T & Val.0 &=  Val.1 * Val.3 \\
 T & \rightarrow N & Val.0 &=  Val.1 \\
 T & \rightarrow (E) & Val.0 &=  Val.1 \\
-N & \rightarrow 0 & Val.0 &=  0 \\
-N & \rightarrow 1 & Val.0 &=  1 \\
-N & \rightarrow 2 & Val.0 &=  2 \\
-N & \rightarrow 3 & Val.0 &=  3 \\
-N & \rightarrow 4 & Val.0 &=  4 \\
-N & \rightarrow 5 & Val.0 &=  5 \\
-N & \rightarrow 6 & Val.0 &=  6 \\
-N & \rightarrow 7 & Val.0 &=  7 \\
-N & \rightarrow 8 & Val.0 &=  8 \\
-N & \rightarrow 9 & Val.0 &=  9 \\
-N & \rightarrow N N' & Val.0 &=  Val.1 * 10 + Val.2 \\
-N' & \rightarrow N & Val.0 &=  Val.1
+N & \rightarrow N D & Val.0 &=  Val.1 * 10 + Val.2 \\
+N & \rightarrow D & Val.0 &=  Val.1 \\
+D & \rightarrow 0 & Val.0 &=  0 \\
+D & \rightarrow 1 & Val.0 &=  1 \\
+D & \rightarrow 2 & Val.0 &=  2 \\
+D & \rightarrow 3 & Val.0 &=  3 \\
+D & \rightarrow 4 & Val.0 &=  4 \\
+D & \rightarrow 5 & Val.0 &=  5 \\
+D & \rightarrow 6 & Val.0 &=  6 \\
+D & \rightarrow 7 & Val.0 &=  7 \\
+D & \rightarrow 8 & Val.0 &=  8 \\
+D & \rightarrow 9 & Val.0 &=  9 
 \end{aligned}
 \end{equation*}
 
-$2 * 5 + 3$
-
+Parse tree for $2 * 5 + 3$:
 
 \begin{center}
-\begin{tikzpicture}[align=center,node distance=20mm,on grid,auto]
+\begin{tikzpicture}[align=center,node distance=12mm,on grid,auto]
    %Syntax:
    %\node[align=<alignment>] (<name>) [<location>] {<text>};
-   \node[align=center] (E) []  {E[$Val$ : 13]};
-   \node[align=center] (FF1) [below=of E]  {+};
-   \node[align=center] (FF2) [left=of FF1]  {F[$Val$ : 10]};
-   \node[align=center] (FF3) [right=of FF1]  {F[$Val$ : 3]};
-   \node[align=center] (N1) [below=of FF3]  {N[$Val$ : 3]};
-   \node[align=center] (N2) [below=of N1]  {3[$Val$ : 3]};
-   \node[align=center] (TT2) [below=of FF2]  {*};
-   \node[align=center] (TT1) [left=of TT2]  {T[$Val$ : 2]};
-   \node[align=center] (TT3) [right=of TT2]  {T[$Val$ : 5]};
-   \node[align=center] (N3) [below=of TT1]  {N[$Val$ : 2]};
-   \node[align=center] (N4) [below=of TT3]  {N[$Val$ : 5]};
-   \node[align=center] (N5) [below=of N3]  {2};
-   \node[align=center] (N6) [below=of N4]  {5};
+   \node[align=center] (S) []  {$k_0$ : S};
+   \node[align=center] (E) [below=of S]  {$k_1$ : E};
+   \node[align=center] (E+F2) [below=of E]  {$k_{14}$ : +};
+   \node[align=center] (E+F1) [left=2cm of E+F2]  {$k_2$ : E};
+   \node[align=center] (E+F3) [right=2cm of E+F2]  {$k_{15}$ : F};
+   \node[align=center] (F+T1) [below=of E+F1]  {$k_3$ : F};
+   \node[align=center] (F+T2) [below=of E+F3]  {$k_{16}$ : T};
+   \node[align=center] (F*T+N2) [below=of F+T1]  {$k_9$ : *};
+   \node[align=center] (F*T+N1) [left=2cm of F*T+N2]  {$k_4$ : F};
+   \node[align=center] (F*T+N3) [right=2cm of F*T+N2]  {$k_{10}$ : T};
+   \node[align=center] (F*T+N4) [below=of F+T2]  {$k_{17}$ : N};
+   \node[align=center] (T*N+D1) [below=of F*T+N1]  {$k_5$ : T};
+   \node[align=center] (T*N+D2) [below=of F*T+N3]  {$k_{11}$ : N};
+   \node[align=center] (T*N+D3) [below=of F*T+N4]  {$k_{18}$ : D};
+   \node[align=center] (N*D+31) [below=of T*N+D1]  {$k_6$ : N};
+   \node[align=center] (N*D+32) [below=of T*N+D2]  {$k_{12}$ : D};
+   \node[align=center] (N*D+33) [below=of T*N+D3]  {$k_{19}$ : 3};
+   \node[align=center] (D*5+31) [below=of N*D+31]  {$k_7$ : D};
+   \node[align=center] (D*5+32) [below=of N*D+32]  {$k_{13}$ : 5};
+   \node[align=center] (2*5+3) [below=of D*5+31]  {$k_8$ : 2};
    
    %Syntax:
    %\path[<line type>]
    % (<name of start>) edge [<textlocation>, <curve type>] {<text>} (<name of target>)
     \path[-]
-      (E) edge [dashed] (FF2)
-      (E) edge [dashed] (FF3)
-      (E) edge [dashed] (FF1)
-      (FF3) edge [dashed] (N1)
-      (N1) edge [dashed] (N2)
-      (FF2) edge [dashed] (TT1)
-      (FF2) edge [dashed] (TT2)
-      (FF2) edge [dashed] (TT3)
-      (TT1) edge [dashed] (N3)
-      (TT3) edge [dashed] (N4)
-      (N3) edge [dashed] (N5)
-      (N4) edge [dashed] (N6)
+      (S) edge (E)
+      (E) edge (E+F1)
+          edge (E+F2)
+          edge (E+F3)
+      (E+F1) edge (F+T1)
+      (E+F3) edge (F+T2)
+      (F+T1) edge (F*T+N1)
+             edge (F*T+N2)
+             edge (F*T+N3)
+      (F+T2) edge (F*T+N4)
+      (F*T+N1) edge (T*N+D1)
+      (F*T+N3) edge (T*N+D2)
+      (F*T+N4) edge (T*N+D3)
+      (T*N+D1) edge (N*D+31)
+      (T*N+D2) edge (N*D+32)
+      (T*N+D3) edge (N*D+33)
+      (N*D+31) edge (D*5+31)
+      (N*D+32) edge (D*5+32)
+      (D*5+31) edge (2*5+3)
       ;
 \end{tikzpicture}
 \end{center}
+
+\pagebreak
+
+Equation system:
+
+\begin{equation*}
+\begin{aligned}
+E_{k_0} &: Val.k_0 = Val.k_1 \\
+E_{k_1} &: Val.k_1 = Val.k_2 + Val.k_{15} \\
+E_{k_2} &: Val.k_2 = Val.k_3 \\
+E_{k_3} &: Val.k_3 = Val.k_4 * Val.k_{10} \\
+E_{k_4} &: Val.k_4 = Val.k_5 \\
+E_{k_5} &: Val.k_5 = Val.k_6 \\
+E_{k_6} &: Val.k_6 = Val.k_7 \\
+E_{k_7} &: Val.k_7 = 2 \\
+E_{k_{10}} &: Val.k_{10} = Val.k_{11} \\
+E_{k_{11}} &: Val.k_{11} = Val.k_{12} \\
+E_{k_{12}} &: Val.k_{12} = 5 \\
+E_{k_{15}} &: Val.k_{15} = Val.k_{16} \\
+E_{k_{16}} &: Val.k_{16} = Val.k_{17} \\
+E_{k_{17}} &: Val.k_{17} = Val.k_{18} \\
+E_{k_{18}} &: Val.k_{18} = 3 \\
+\end{aligned}
+\end{equation*}
+
+Solution:
+
+\begin{equation*}
+\begin{aligned}
+E_{k_0} &: Val.k_0 = 13 \\
+E_{k_1} &: Val.k_1 = 10 + 3 = 13 \\
+E_{k_2} &: Val.k_2 = 10 \\
+E_{k_3} &: Val.k_3 = 2 * 5 = 10 \\
+E_{k_4} &: Val.k_4 = 2 \\
+E_{k_5} &: Val.k_5 = 2 \\
+E_{k_6} &: Val.k_6 = 2 \\
+E_{k_7} &: Val.k_7 = 2 \\
+E_{k_{10}} &: Val.k_{10} = 5 \\
+E_{k_{11}} &: Val.k_{11} = 5 \\
+E_{k_{12}} &: Val.k_{12} = 5 \\
+E_{k_{15}} &: Val.k_{15} = 3 \\
+E_{k_{16}} &: Val.k_{16} = 3 \\
+E_{k_{17}} &: Val.k_{17} = 3 \\
+E_{k_{18}} &: Val.k_{18} = 3 
+\end{aligned}
+\end{equation*}
+
+Thus $E_t = 13$.
