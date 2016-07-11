@@ -1,12 +1,16 @@
 package generator;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 import checker.AST;
 import checker.ASTNode;
 import symbols.NonTerminals.NonTerminal;
 import symbols.Tokens.Token;
+import util.Pair;
 
 /**
  * Generator which converts an abstract syntax tree into the Jasmin language.
@@ -15,7 +19,10 @@ import symbols.Tokens.Token;
 public class JasminGenerator {
 
 	// The symbol table mapping an identifier to its id
-	private HashMap<String, Integer> symbolTable = new HashMap<String, Integer>();
+	//Changed definition: Each variable name holds a list of pairs of scope levels and ids
+	private HashMap<String, List<Pair<Integer, Integer>>> symbolTable = new HashMap<String, List<Pair<Integer, Integer>>>();
+	private int scopeLevel = 0; //Counts depth of scope
+	private int varCount = 0; //Counts used vars, only gets decreased when leaving a scope, clearing the newest ids for reuse
 	private int ifCount = 0;
 	private int loopCount = 0;
 	private int negCount = 0;
@@ -78,10 +85,276 @@ public class JasminGenerator {
 		assert (node.getAlphabet().equals(NonTerminal.PROGRAM));
 		StringBuilder result = new StringBuilder();
 
-		// TODO implement translation from program to Jasmin code
+		assert (node.getChildren().size() == 1 || node.getChildren().size() == 2);
+		result.append(translateStat(node.getChildren().get(0)));
+		if(node.getChildren().size() == 2) {
+			result.append(translateProg(node.getChildren().get(1)));
+		}
 
 		return result.toString();
 	}
+	
+	private String translateStat(ASTNode node) throws GeneratorException {
+		assert (node.getAlphabet().equals(NonTerminal.STATEMENT));
+		StringBuilder result = new StringBuilder();
+
+		assert(node.getChildren().size() == 1 || node.getChildren().size() == 2);
+		ASTNode child = node.getChildren().get(0);
+		assert(child.getAlphabet() instanceof NonTerminal);
+		NonTerminal nt = (NonTerminal) child.getAlphabet();
+		assert(nt == NonTerminal.DECLARATION || nt == NonTerminal.ASSIGNMENT || 
+				nt == NonTerminal.BRANCH || nt == NonTerminal.LOOP || 
+				nt == NonTerminal.OUT);
+		switch(nt) {
+		case DECLARATION:
+			result.append(translateDecl(child));
+			break;
+		case ASSIGNMENT:
+			result.append(translateAssi(child));
+			break;
+		case BRANCH:
+			result.append(translateBran(child));
+			break;
+		case LOOP:
+			result.append(translateLoop(child));
+			break;
+		case OUT:
+			result.append(translateWrite(child));
+			break;
+		default:
+		}
+
+		return result.toString();
+	}
+	
+	private String translateDecl(ASTNode node) throws GeneratorException {
+		assert (node.getAlphabet().equals(NonTerminal.DECLARATION));
+		StringBuilder result = new StringBuilder();
+		
+		assert(node.getChildren().size() == 2);
+		assert(node.getChildren().get(1).getAlphabet().equals(Token.ID));
+		String name = node.getChildren().get(1).getAttribute();
+		if(symbolTable.containsKey(name)) { //Add variable to table if it's not in there, add variable to list, 
+			// if its old scope level is smaller, overwrite reference if old variable has same scope (latest decl counts)
+			List<Pair<Integer, Integer>> vars = symbolTable.get(name);
+			if(vars.size() > 0){
+				if(vars.get(vars.size() - 1).getFirst() < scopeLevel) {
+					varCount++;
+					vars.add(new Pair<Integer, Integer>(scopeLevel, varCount));
+					appendString(result, "ldc 0");
+					appendString(result, "istore " + varCount);
+				} else if (vars.get(vars.size() - 1).getFirst() == scopeLevel){
+					appendString(result, "ldc 0");
+					appendString(result, "istore " + vars.get(vars.size() - 1).getSecond());
+				} else {
+					throw new GeneratorException("ScopeLevel in symbol table too high.");
+				}
+			} else {
+				varCount++;
+				vars.add(new Pair<Integer, Integer>(scopeLevel, varCount));
+				appendString(result, "ldc 0");
+				appendString(result, "istore " + varCount);
+			}
+		} else {
+			symbolTable.put(name,  new ArrayList<Pair<Integer, Integer>>());
+			List<Pair<Integer, Integer>> vars = symbolTable.get(name);
+			varCount++;
+			vars.add(new Pair<Integer, Integer>(scopeLevel, varCount));
+			appendString(result, "ldc 0");
+			appendString(result, "istore " + varCount);
+		}
+		
+		return result.toString();
+	}
+	
+	private String translateAssi(ASTNode node) throws GeneratorException {
+		assert (node.getAlphabet().equals(NonTerminal.ASSIGNMENT));
+		StringBuilder result = new StringBuilder();
+		
+		assert(node.getChildren().size() == 3 || node.getChildren().size() == 5);
+		if(node.getChildren().size() == 3) {
+			assert(node.getChildren().get(2).getAlphabet().equals(NonTerminal.EXPR));
+			result.append(translateExpr(node.getChildren().get(2)));
+		} else {
+			assert(node.getChildren().get(2).getAlphabet().equals(Token.READ));
+			result.append(translateReadInt());
+		}
+		assert(node.getChildren().get(0).getAlphabet().equals(Token.ID));
+		List<Pair<Integer, Integer>> var = symbolTable.get(node.getChildren().get(0).getAttribute());
+		int id = var.get(var.size() - 1).getSecond();
+		appendString(result, "istore " + id);
+		
+		return result.toString();
+	}
+	
+	private String translateBran(ASTNode node) throws GeneratorException {
+		assert (node.getAlphabet().equals(NonTerminal.BRANCH));
+		StringBuilder result = new StringBuilder();
+		
+		assert(node.getChildren().size() == 7 || node.getChildren().size() == 11);
+		assert(node.getChildren().get(2).getAlphabet().equals(NonTerminal.GUARD));
+		assert(node.getChildren().get(5).getAlphabet().equals(NonTerminal.PROGRAM));
+		result.append(translateGuar(node.getChildren().get(2)));
+		if(node.getChildren().size() > 7) {
+			assert(node.getChildren().get(9).getAlphabet().equals(NonTerminal.PROGRAM));
+			appendString(result, "ifeq else" + ifCount);
+			scopeLevel++;
+			result.append(translateProg(node.getChildren().get(5))); //Increase scope around this, remove scoped vars afterwards
+			clearScopeVars();
+			appendString(result, "goto endif" + ifCount);
+			appendString(result, "else" + ifCount + ":");
+			result.append(translateProg(node.getChildren().get(9))); //Increase scope around this, remove scoped vars afterwards
+			clearScopeVars();
+			scopeLevel--;
+		} else {
+			appendString(result, "ifeq endif" + ifCount);
+			scopeLevel++;
+			result.append(translateProg(node.getChildren().get(5))); //Increase scope around this, remove scoped vars afterwards
+			clearScopeVars();
+			scopeLevel--;
+		}
+		appendString(result, "endif" + ifCount + ":");
+		ifCount++;
+		
+		return result.toString();
+	}
+	
+	private String translateLoop(ASTNode node) throws GeneratorException {
+		assert (node.getAlphabet().equals(NonTerminal.LOOP));
+		StringBuilder result = new StringBuilder();
+		
+		assert(node.getChildren().size() == 7);
+		assert(node.getChildren().get(2).getAlphabet().equals(NonTerminal.GUARD));
+		assert(node.getChildren().get(5).getAlphabet().equals(NonTerminal.PROGRAM));
+		appendString(result, "while" + loopCount + ":");
+		result.append(translateGuar(node.getChildren().get(2)));
+		appendString(result, "ifeq done" + loopCount);
+		scopeLevel++;
+		result.append(translateProg(node.getChildren().get(5))); //Increase scope around this, remove scoped vars afterwards
+		clearScopeVars();
+		scopeLevel--;
+		appendString(result, "goto while" + loopCount);
+		appendString(result, "done" + loopCount + ":");
+		loopCount++;
+		
+		return result.toString();
+	}
+	
+	private String translateGuar(ASTNode node) throws GeneratorException {
+		assert (node.getAlphabet().equals(NonTerminal.GUARD));
+		StringBuilder result = new StringBuilder();
+		
+		assert(node.getChildren().size() == 1 || node.getChildren().size() == 3 || node.getChildren().size() == 4);
+		if(node.getChildren().size() == 1) {
+			assert(node.getChildren().get(0).getAlphabet().equals(NonTerminal.SUBGUARD) ||
+					node.getChildren().get(0).getAlphabet().equals(NonTerminal.RELATION));
+			if(node.getChildren().get(0).getAlphabet().equals(NonTerminal.SUBGUARD)) {
+				result.append(translateSubg(node.getChildren().get(0)));
+			} else {
+				result.append(translateRela(node.getChildren().get(0)));
+			}
+		} else if(node.getChildren().size() == 3) {
+			assert(node.getChildren().get(1).getAlphabet().equals(NonTerminal.SUBGUARD));
+			result.append(translateSubg(node.getChildren().get(1)));
+		} else {
+			assert(node.getChildren().get(2).getAlphabet().equals(NonTerminal.GUARD));
+			result.append(translateGuar(node.getChildren().get(2)));
+			appendString(result, "ifeq negnull" + negCount);
+			appendString(result, "ldc 1");
+			appendString(result, "goto endneg" + negCount);
+			appendString(result, "negnull" + negCount + ":");
+			appendString(result, "ldc 0");
+			appendString(result, "endneg" + negCount + ":");
+			negCount++;
+		}
+		
+		return result.toString();
+	}
+	
+	private String translateSube(ASTNode node) throws GeneratorException {
+		assert (node.getAlphabet().equals(NonTerminal.SUBEXPR));
+		StringBuilder result = new StringBuilder();
+		
+		assert(node.getChildren().size() == 3);
+		assert(node.getChildren().get(1).getAlphabet().equals(Token.PLUS) ||
+				node.getChildren().get(1).getAlphabet().equals(Token.MINUS) ||
+				node.getChildren().get(1).getAlphabet().equals(Token.TIMES) ||
+				node.getChildren().get(1).getAlphabet().equals(Token.DIV));
+		assert(node.getChildren().get(0).getAlphabet().equals(NonTerminal.EXPR));
+		assert(node.getChildren().get(2).getAlphabet().equals(NonTerminal.EXPR));
+		result.append(translateExpr(node.getChildren().get(0)));
+		result.append(translateExpr(node.getChildren().get(2)));
+		if(node.getChildren().get(1).getAlphabet().equals(Token.PLUS)){
+			appendString(result, "iadd");
+		} else if(node.getChildren().get(1).getAlphabet().equals(Token.MINUS)) {
+			appendString(result, "isub");
+		} else if(node.getChildren().get(1).getAlphabet().equals(Token.TIMES)) {
+			appendString(result, "imul");
+		} else {
+			appendString(result, "idiv");
+		}
+		
+		return result.toString();
+	}
+	
+	private String translateSubg(ASTNode node) throws GeneratorException {
+		assert (node.getAlphabet().equals(NonTerminal.SUBGUARD));
+		StringBuilder result = new StringBuilder();
+
+		assert(node.getChildren().size() == 3);
+		assert(node.getChildren().get(1).getAlphabet().equals(Token.AND) ||
+				node.getChildren().get(1).getAlphabet().equals(Token.OR));
+		assert(node.getChildren().get(0).getAlphabet().equals(NonTerminal.GUARD));
+		assert(node.getChildren().get(2).getAlphabet().equals(NonTerminal.GUARD));
+		result.append(translateGuar(node.getChildren().get(0)));
+		result.append(translateGuar(node.getChildren().get(2)));
+		if(node.getChildren().get(1).getAlphabet().equals(Token.AND)) {
+			appendString(result, "iand");
+		} else {
+			appendString(result, "ior");
+		}
+		
+		return result.toString();
+	}
+	
+	private String translateRela(ASTNode node) throws GeneratorException {
+		assert (node.getAlphabet().equals(NonTerminal.RELATION));
+		StringBuilder result = new StringBuilder();
+		
+		assert(node.getChildren().size() == 3);
+		assert(node.getChildren().get(1).getAlphabet().equals(Token.LT) ||
+				node.getChildren().get(1).getAlphabet().equals(Token.LEQ) ||
+				node.getChildren().get(1).getAlphabet().equals(Token.EQ) ||
+				node.getChildren().get(1).getAlphabet().equals(Token.GT) ||
+				node.getChildren().get(1).getAlphabet().equals(Token.GEQ) ||
+				node.getChildren().get(1).getAlphabet().equals(Token.NEQ));
+		assert(node.getChildren().get(0).getAlphabet().equals(NonTerminal.EXPR));
+		assert(node.getChildren().get(2).getAlphabet().equals(NonTerminal.EXPR));
+		result.append(translateExpr(node.getChildren().get(0)));
+		result.append(translateExpr(node.getChildren().get(2)));
+		if(node.getChildren().get(1).getAlphabet().equals(Token.LT)){
+			appendString(result, "if_icmplt reltrue" + relCount);
+		} else if(node.getChildren().get(1).getAlphabet().equals(Token.LEQ)) {
+			appendString(result, "if_icmple reltrue" + relCount);
+		} else if(node.getChildren().get(1).getAlphabet().equals(Token.EQ)) {
+			appendString(result, "if_icmpeq reltrue" + relCount);
+		} else if(node.getChildren().get(1).getAlphabet().equals(Token.GT)) {
+			appendString(result, "if_icmpgt reltrue" + relCount);
+		} else if(node.getChildren().get(1).getAlphabet().equals(Token.GEQ)) {
+			appendString(result, "if_icmpge reltrue" + relCount);
+		} else {
+			appendString(result, "if_icmpne reltrue" + relCount);
+		}
+		appendString(result, "ldc 0");
+		appendString(result, "goto endrel" + relCount);
+		appendString(result, "reltrue" + relCount + ":");
+		appendString(result, "ldc 1");
+		appendString(result, "endrel" + relCount + ":");
+		relCount++;
+		
+		return result.toString();
+	}
+	
 
 	/**
 	 * Generate Jasmin code for an expression.
@@ -96,7 +369,23 @@ public class JasminGenerator {
 		assert (node.getAlphabet().equals(NonTerminal.EXPR));
 		StringBuilder result = new StringBuilder();
 
-		// TODO implement translation of expression to Jasmin code.
+		assert(node.getChildren().size() == 1 || node.getChildren().size() == 3);
+		if(node.getChildren().size() == 3) {
+			assert(node.getChildren().get(1).getAlphabet().equals(NonTerminal.SUBEXPR));
+			result.append(translateSube(node.getChildren().get(1)));
+		} else {
+			assert(node.getChildren().get(0).getAlphabet().equals(NonTerminal.SUBEXPR) ||
+					node.getChildren().get(0).getAlphabet().equals(Token.NUMBER) ||
+					node.getChildren().get(0).getAlphabet().equals(Token.ID));
+			if(node.getChildren().get(0).getAlphabet().equals(NonTerminal.SUBEXPR)) {
+				result.append(translateSube(node.getChildren().get(0)));
+			} else if(node.getChildren().get(0).getAlphabet().equals(Token.NUMBER)) {
+				appendString(result, "ldc " + node.getChildren().get(0).getAttribute());
+			} else {
+				List<Pair<Integer, Integer>> var = symbolTable.get(node.getChildren().get(0).getAttribute());
+				appendString(result, "iload " + var.get(var.size() - 1).getSecond());
+			}
+		}
 
 		return result.toString();
 	}
@@ -174,5 +463,24 @@ public class JasminGenerator {
 	 */
 	private void appendString(StringBuilder builder, String s) {
 		builder.append(s + System.lineSeparator());
+	}
+	
+	/**
+	 * Removes all variables of the current scope level from the symbol table.
+	 * Also removes all empty variable lists.
+	 */
+	private void clearScopeVars() {
+		for(List<Pair<Integer, Integer>> values : symbolTable.values()) {
+			if(values.size() > 0 && values.get(values.size() - 1).getFirst() == scopeLevel) {
+				values.remove(values.size() - 1);
+				varCount--;
+			}
+		}
+		for(Iterator<Map.Entry<String, List<Pair<Integer, Integer>>>> it = symbolTable.entrySet().iterator(); it.hasNext(); ) {
+			Map.Entry<String, List<Pair<Integer, Integer>>> entry = it.next();
+		    if(entry.getValue().size() == 0) {
+		    	it.remove();
+		    }
+		}
 	}
 }

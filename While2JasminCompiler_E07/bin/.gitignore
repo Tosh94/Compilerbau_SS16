@@ -1,4 +1,8 @@
+/checker
+/generator
 /lexer
 /parser
+/recursive_descent_parser
+/symbols
+/unittests
 /util
-/checker
