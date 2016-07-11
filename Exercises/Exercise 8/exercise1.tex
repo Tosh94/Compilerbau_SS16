@@ -1,15 +1,15 @@
-\begin{tabular}{*{21}{|l}|}
+\begin{tabular}{*{22}{|l}|}
 \hline
-13 & 3 & 9 & 1 & 4 & 3 & 2 & 2 & 4 & 5 & 5 & 15 & 1 & 3 & 2 & \textcolor{red}{12} & 0 & 0 & 0 & 17 & 3  \\
-sl & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & $v_2$ & $v_3$ & sl & \textcolor{red}{dl} & ra & & & &   \\ \hline \hline
-13 & 3 & 9 & 1 & 4 & 3 & 2 & 2 & 5 & 4 & 5 & 15 & 1 & 3 & 2 & 12 & 0 & 0 & 0 & 17 & 3  \\
-sl & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & $v_2$ & sl & dl & ra & sl & dl & ra & i/o &  i/o \\ \hline \hline
-\textcolor{red}{13} & 3 & 9 & 1 & 4 & 3 & 2 & 2 & \textcolor{red}{8} & 4 & 5 & 15 & 1 & 3 & 2 & 12 & 0 & 0 & 0 & 17 & 3  \\ 
-\textcolor{red}{sl} & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & \textcolor{red}{sl} & dl & ra & $v_1$ & $v_2$ & sl & dl & ra & sl & dl & ra & i/o &  i/o \\ \hline
+a)&13 & 3 & 9 & 1 & 4 & 3 & 2 & 2 & 4 & 5 & 5 & 15 & 1 & 3 & 2 & \textcolor{red}{12} & 0 & 0 & 0 & 17 & 3  \\
+&sl & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & $v_2$ & $v_3$ & sl & \textcolor{red}{dl} & ra & & & &   \\ \hline \hline
+b)&13 & 3 & 9 & 1 & 4 & 3 & 2 & 2 & 5 & 4 & 5 & 15 & 1 & 3 & 2 & 12 & 0 & 0 & 0 & 17 & 3  \\
+&sl & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & $v_2$ & sl & dl & ra & sl & dl & ra & i/o &  i/o \\ \hline \hline
+c)&\textcolor{red}{13} & 3 & 9 & 1 & 4 & 3 & 2 & 2 & \textcolor{red}{8} & 4 & 5 & 15 & 1 & 3 & 2 & 12 & 0 & 0 & 0 & 17 & 3  \\ 
+&\textcolor{red}{sl} & dl & ra & $v_1$ & sl & dl & ra & $v_1$ & \textcolor{red}{sl} & dl & ra & $v_1$ & $v_2$ & sl & dl & ra & sl & dl & ra & i/o &  i/o \\ \hline
 \end{tabular}
 
-Stack $a)$ is not a valid stack, since the marked frame points to outside of the procedure stack.
+Stack $a)$ is not a valid stack, since no valid frame alignment is present and the marked frame points to outside of the procedure stack.
 
 Stack $b)$ is valid and could be the result of the execution of an EPL program.
 
-Stack $c)$ is not a valid stack, since the two marked static links are a contradiction concerning the surrounding environment.
+Stack $c)$ is not a valid stack, since the two marked static links form a contradiction concerning the surrounding environment.
