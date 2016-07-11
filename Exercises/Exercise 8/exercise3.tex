@@ -5,9 +5,66 @@
 \begin{split}
 ct(\text{for(var}\: X := A\:;\: B\:;\: C_1) \:C_2, st, a, lev) := \:& ct(X := A, st, a, lev); \\
 		& bt(B, st, a, lev); a' : \text{JFALSE}(a'' + 1); \\
-		& ct(C_2; C_1, st, a, lev); \\
+		& ct(C_2; C_1, st, a' + 1, lev); \\
 		& a'': JMP(a + 1);
 \end{split}
 \end{equation*}
 
 \subsection*{b)}
+
+\begin{align*}
+ct(&\text{for(var}\: x := 0\:;\: x < 10\:;\: x := x + 1) \:P(), st, a, lev)  \\
+%:=\: &ct(x := 0, st, a, lev); \\
+%		 &bt(x < 10, st, a, lev); a_0 : \text{JFALSE}(a_1 + 1); \\
+%		& ct(P(); x := x + 1, st, a_0, lev); \\
+%		& a_1: JMP(a + 1); \\
+%:=\: & at(0, st, a, lev); a_2: \text{STORE}(lev - lev', off); \\
+%	& \text{if } st(x) = (\text{var}, lev', off); \\
+%	& at(x, st, a, lev); at(10, st, a_3, lev); a_4: LT; a_0 : \text{JFALSE}(a_1 + 1); \\
+%		& ct(P(), st, a, lev); ct(x := x + 1, st, a, lev); \\
+%		& a_1: JMP(a + 1); \\
+%:=\: & a_1 LIT(0); a_2: \text{STORE}(lev - lev', off); \\
+%	& \text{if } st(x) = (\text{var}, lev', off); \\
+%	& at(x, st, a, lev); a_3: LIT(10); a_4: LT; a_0 : \text{JFALSE}(a_1 + 1); \\
+%		& ct(P(), st, a, lev); ct(x := x + 1, st, a, lev); \\
+%		& a_1: JMP(a + 1);
+\end{align*}
+\begin{minipage}{0.5\textwidth}
+Assumption: Outside level $lev$, 
+
+x stored at $(var, 1, off)$.
+
+\begin{tabular}{rl}
+    $a_0$:& LIT(0); \\
+    & STORE($lev$ - 1, $off$) \\
+    $a_1$:& LOAD($lev$ - 1, $off$) \\
+    & LIT(10); \\
+    & LT; \\
+    & JFALSE($a_n$ + 1); \\
+    & CALL P(); \\
+    & LOAD($lev$ - 1, $off$); \\
+    & LIT(1); \\
+    & ADD; \\
+    & STORE($lev$ - 1, $off$); \\
+    $a_n$: & JMP($a_1$); \\
+\end{tabular}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+Linearized:
+
+\vspace{6mm}
+\begin{tabular}{rl}
+    1:& LIT(0); \\
+    2:& STORE($lev$ - 1, $off$) \\
+    3:& LOAD($lev$ - 1, $off$) \\
+    4:& LIT(10); \\
+    5:& LT; \\
+    6:& JFALSE(13); \\
+    7:& CALL P(); \\
+    8:& LOAD($lev$ - 1, $off$); \\
+    9:& LIT(1); \\
+    10:& ADD; \\
+    11:& STORE($lev$ - 1, $off$); \\
+    12:& JMP(3); \\
+\end{tabular}
+\end{minipage}
