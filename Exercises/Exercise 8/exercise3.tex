@@ -1,3 +1,13 @@
 \subsection*{a)}
 
+
+\begin{equation*}
+\begin{split}
+ct(\text{for(var}\: X := A\:;\: B\:;\: C_1) \:C_2, st, a, lev) := \:& ct(X := A, st, a, lev); \\
+		& bt(B, st, a, lev); a' : \text{JFALSE}(a'' + 1); \\
+		& ct(C_2; C_1, st, a, lev); \\
+		& a'': JMP(a + 1);
+\end{split}
+\end{equation*}
+
 \subsection*{b)}
